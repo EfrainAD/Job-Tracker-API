@@ -1,0 +1,42 @@
+const dotenv = require('dotenv').config()
+const express = require('express')
+const mongoose = require('mongoose')
+
+// Middleware Imports
+const cors = require('cors')
+const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
+
+// config var
+const PORT = process.env.PORT || 8000
+const FRONT_END_URL = process.env.FRONT_END_URL || 'https://localhost:3000'
+const MONGO_DB = process.env.MONGO_DB || 'mongodb://localhost:27017/Job-Tracker'
+
+const app = express()
+
+// Middleware
+app.use(express.json())
+app.use(cookieParser())
+app.use(bodyParser.json())
+app.use(express.urlencoded({ extended: false }))
+app.use(cors({
+     origin: [ FRONT_END_URL , 'http://localhost:3000' ],
+     credentials: true
+}))
+
+
+// Routes
+app.get('/', (req, res) => {
+     res.send('<div style="height:100%;display:flex;justify-content:center;align-items:center;"><h1>This API is working!</h1></div>')
+})
+
+// Middleware Error 
+// TBD
+
+mongoose.connect(MONGO_DB)
+     .then(() => {
+          app.listen(PORT, () => {
+               console.log(`This server is running on port ${PORT}`) 
+          })
+     })
+     .catch((error) => console.log(error))
