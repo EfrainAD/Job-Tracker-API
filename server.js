@@ -1,11 +1,11 @@
-const dotenv = require('dotenv').config()
-const express = require('express')
-const mongoose = require('mongoose')
+import 'dotenv/config';
+import express from 'express'
+import mongoose from 'mongoose'
 
 // Middleware Imports
-const cors = require('cors')
-const bodyParser = require('body-parser')
-const cookieParser = require('cookie-parser')
+import cors from 'cors'
+import bodyParser from 'body-parser'
+import cookieParser from 'cookie-parser'
 
 // config var
 const PORT = process.env.PORT || 8000
@@ -23,7 +23,6 @@ app.use(cors({
      origin: [ FRONT_END_URL , 'http://localhost:3000' ],
      credentials: true
 }))
-
 
 // Routes
 app.get('/', (req, res) => {
