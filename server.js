@@ -2,6 +2,9 @@ import 'dotenv/config';
 import express from 'express'
 import mongoose from 'mongoose'
 
+// Routes Import
+import jobRoutes from './routes/job-routes.js'
+
 // Middleware Imports
 import cors from 'cors'
 import bodyParser from 'body-parser'
@@ -25,6 +28,8 @@ app.use(cors({
 }))
 
 // Routes
+app.use('/api/jobs', jobRoutes)
+
 app.get('/', (req, res) => {
      res.send('<div style="height:100%;display:flex;justify-content:center;align-items:center;"><h1>This API is working!</h1></div>')
 })
