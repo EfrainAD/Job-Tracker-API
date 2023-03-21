@@ -9,6 +9,7 @@ import jobRoutes from './routes/job-routes.js'
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
+import errorHandler from './middleware/errorHandler.js'
 
 // config var
 const PORT = process.env.PORT || 8000
@@ -35,7 +36,7 @@ app.get('/', (req, res) => {
 })
 
 // Middleware Error 
-// TBD
+app.use(errorHandler)
 
 mongoose.connect(MONGO_DB)
      .then(() => {
