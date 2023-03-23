@@ -44,3 +44,14 @@ export const checkIfUser = (user) => {
       throw new Error(`Server Error: Improper use of get user's info function`)
    }
 }
+
+export const getNewUserOjt = (user, formData) => {
+   const newUserObj = {}
+   
+   newUserObj.name = formData.name || user.name
+   newUserObj.photo = formData.photo || user.photo
+   newUserObj.phone = formData.phone || user.phone
+   newUserObj.bio = formData.bio || user.bio
+
+   return newUserObj
+}

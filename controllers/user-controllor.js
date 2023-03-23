@@ -1,6 +1,6 @@
 import User from '../models/user-model.js'
 import asyncHandler from 'express-async-handler'
-import { createToken, validateIfUserExists, validateSignInFields, validateIfPasswordCorrect, checkIfUser } from '../utils/user/user-utils.js'
+import { createToken, validateIfUserExists, validateSignInFields, validateIfPasswordCorrect, checkIfUser, getNewUserOjt } from '../utils/user/user-utils.js'
 
 // Create User
 export const createUser = asyncHandler(async (req, res, next) => {
@@ -63,6 +63,25 @@ export const getUser = asyncHandler(async (req, res) => {
    res.status(201).json({
          _id, name, email, photo, phone, bio
    })
+})
+
+// Update User
+export const updateUser = asyncHandler(async (req, res) => {
+   const user = req.user
+   const body = req.body
+   const { _id } = user
+   
+   checkIfUser(user)
+
+   const newUserObj = getNewUserOjt(user, body)
+
+   const updatedUser = await User.findOneAndUpdate(
+      {_id}, 
+      newUserObj, 
+      {new: true, runValidators: true}
+   ).select('-password')
+   
+   res.json(updatedUser)
 })
 
 // Get All Users // TO BE REMOVED
