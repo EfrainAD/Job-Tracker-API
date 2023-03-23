@@ -22,21 +22,25 @@ export const validateIfUserExists = (user) => {
 const checkUserPassword = async (user, password) => await bcrypt.compare(password, user.password)
 
 export const getUserIdFromToken = (token, res) => {
-   
    if (!token) {
       res.status(401)
       throw new Error()
    }
 
-   return { _id } = jwt.verify(token, process.env.JWT_SECRET)
+   const { id } = jwt.verify(token, process.env.JWT_SECRET)
+   return id
 }
-
-
 export const validateIfPasswordCorrect = async (user, password) => {
    const isPasswordCorrect = await checkUserPassword(user, password)
    
    if (!isPasswordCorrect) {
       res.status(400)
       throw new Error('user or password is invalid')
+   }
+}
+
+export const checkIfUser = (user) => {
+   if (!user) {
+      throw new Error(`Server Error: Improper use of get user's info function`)
    }
 }
