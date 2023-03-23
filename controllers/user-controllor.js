@@ -40,6 +40,17 @@ export const signInUser = asyncHandler(async (req, res) => {
    })
 })
 
+export const signOutUser = asyncHandler(async (req, res) => {
+   res.cookie('token', '', {
+        path: '/',
+        httpOnly: true,
+        expires: new Date(0), 
+        sameSite: 'none',
+        secure: true
+   })
+   res.status(200).json({msg: 'Signed Out Successful'})
+})
+
 // Get All Users // TO BE REMOVED
 export const getUsers = asyncHandler(async (req, res) => {
    const user = await User.find({})
