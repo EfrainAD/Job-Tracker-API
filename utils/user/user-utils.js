@@ -21,6 +21,17 @@ export const validateIfUserExists = (user) => {
 
 const checkUserPassword = async (user, password) => await bcrypt.compare(password, user.password)
 
+export const getUserIdFromToken = (token, res) => {
+   
+   if (!token) {
+      res.status(401)
+      throw new Error()
+   }
+
+   return { _id } = jwt.verify(token, process.env.JWT_SECRET)
+}
+
+
 export const validateIfPasswordCorrect = async (user, password) => {
    const isPasswordCorrect = await checkUserPassword(user, password)
    
