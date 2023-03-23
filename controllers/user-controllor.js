@@ -1,6 +1,6 @@
 import User from '../models/user-model.js'
 import asyncHandler from 'express-async-handler'
-import { createToken, validateIfUserExists, validateSignInFields, validateIfPasswordCorrect } from '../utils/user/user-utils.js'
+import { createToken, validateIfUserExists, validateSignInFields, validateIfPasswordCorrect, checkIfUser } from '../utils/user/user-utils.js'
 
 // Create User
 export const createUser = asyncHandler(async (req, res, next) => {
@@ -40,6 +40,7 @@ export const signInUser = asyncHandler(async (req, res) => {
    })
 })
 
+// Sign Out
 export const signOutUser = asyncHandler(async (req, res) => {
    res.cookie('token', '', {
         path: '/',
@@ -49,6 +50,19 @@ export const signOutUser = asyncHandler(async (req, res) => {
         secure: true
    })
    res.status(200).json({msg: 'Signed Out Successful'})
+})
+
+// Get Users Info
+export const getUser = asyncHandler(async (req, res) => {
+   const user = req.user
+   
+   checkIfUser(user)
+
+   const {_id, name, email, photo, phone, bio} = user
+
+   res.status(201).json({
+         _id, name, email, photo, phone, bio
+   })
 })
 
 // Get All Users // TO BE REMOVED
