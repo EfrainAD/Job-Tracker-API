@@ -1,14 +1,15 @@
 import User from '../models/user-model.js'
 import asyncHandler from 'express-async-handler'
-import { createToken, validateIfUserExists, validateSignInFields, validateIfPasswordCorrect, checkIfUser, getNewUserOjt } from '../utils/user/user-utils.js'
+import { createToken, validateIfUserExists, validateSignInFields, validateIfPasswordCorrect, checkIfUser, getNewUserObj, validateRegistorFields } from '../utils/user/user-utils.js'
+const oneDayInMilliseconds = 1000 * 60 * 60 * 24; // 1 day in milliseconds
 
 // Create User
 export const createUser = asyncHandler(async (req, res, next) => {
-   if (!req.body.name) {
-      res.status(400)
-      throw new Error('Missing one or more required fields')
-   }
-   const user = await User.create(req.body)
+   const body = req.body
+
+   validateRegistorFields(body, res)
+
+   const {password, ...user} = await User.create(body)
    res.status(201).json(user)
 })
 
@@ -16,21 +17,21 @@ export const createUser = asyncHandler(async (req, res, next) => {
 export const signInUser = asyncHandler(async (req, res) => {
    const {email, password} = req.body
 
-   validateSignInFields(email, password)
+   validateSignInFields(email, password, res)
 
    const user = await User.findOne({email})
+   validateIfUserExists(user, res)
 
-   validateIfUserExists(user)
-   validateIfPasswordCorrect(user, password)
+   await validateIfPasswordCorrect(user, password, res)
          
    const {_id, name, photo, phone, bio} = user
-
+   
    // Create cookie
    const token = createToken(_id)
    res.cookie('token', token, {
          path: '/',
          httpOnly: true,
-         expires: new Date(Date.now() + 1000 * 86400), // 1 Day
+         expires: new Date(Date.now() + oneDayInMilliseconds), // a day lattedr
          sameSite: 'none',
          secure: true
    })
@@ -49,7 +50,7 @@ export const signOutUser = asyncHandler(async (req, res) => {
         sameSite: 'none',
         secure: true
    })
-   res.status(200).json({msg: 'Signed Out Successful'})
+   res.status(200).json({message: 'Signed Out Successful'})
 })
 
 // Get Users Info
@@ -73,7 +74,7 @@ export const updateUser = asyncHandler(async (req, res) => {
    
    checkIfUser(user)
 
-   const newUserObj = getNewUserOjt(user, body)
+   const newUserObj = getNewUserObj(user, body)
 
    const updatedUser = await User.findOneAndUpdate(
       {_id}, 

@@ -1,18 +1,27 @@
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import asyncHandler from 'express-async-handler'
 
 export const createToken = (id) => {
    return jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: '1d'})
 }
 
-export const validateSignInFields = (email, password) => {
+export const validateRegistorFields = (formData, res) => {
+   const {email, password, name} = formData
+
+   if (!email || !password || !name) {
+      res.status(400)
+      throw new Error('All fields are required')
+   }
+}
+export const validateSignInFields = (email, password, res) => {
    if (!email || !password) {
       res.status(400)
       throw new Error('You need both email and passowrd')
    }
 }
 
-export const validateIfUserExists = (user) => {
+export const validateIfUserExists = (user, res) => {
    if (!user) {
         res.status(400)
         throw new Error('user or password is invalid')
@@ -30,11 +39,11 @@ export const getUserIdFromToken = (token, res) => {
    const { id } = jwt.verify(token, process.env.JWT_SECRET)
    return id
 }
-export const validateIfPasswordCorrect = async (user, password) => {
+export const validateIfPasswordCorrect = async (user, password, res) => {
    const isPasswordCorrect = await checkUserPassword(user, password)
-   
+   console.log('ips', isPasswordCorrect)
    if (!isPasswordCorrect) {
-      res.status(400)
+      res.status(401)
       throw new Error('user or password is invalid')
    }
 }
@@ -45,7 +54,7 @@ export const checkIfUser = (user) => {
    }
 }
 
-export const getNewUserOjt = (user, formData) => {
+export const getNewUserObj = (user, formData) => {
    const newUserObj = {}
    
    newUserObj.name = formData.name || user.name
