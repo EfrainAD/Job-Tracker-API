@@ -36,7 +36,13 @@ const userSchema = mongoose.Schema({
           maxLength: [250, 'Bio must be shorter then 250 characters long'],
           default: 'bio'
      }
-},{
+}, {
+     toJSON: {
+       transform: function(doc, ret) {
+         delete ret.password;
+         return ret;
+       }
+     },
      timestamps: true
 })
 
