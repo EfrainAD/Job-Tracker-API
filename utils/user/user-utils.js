@@ -6,26 +6,26 @@ export const createToken = (id) => {
    return jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: '1d'})
 }
 
-export const validateRegistorFields = (formData, res) => {
+export const isRegistorFormValidated = (formData, res) => {
    const {email, password, name} = formData
 
-   if (!email || !password || !name) {
-      res.status(400)
-      throw new Error('All fields are required')
-   }
+   if (!email || !password || !name) 
+      return false
+   
+   return true
 }
-export const validateSignInFields = (email, password, res) => {
+export const isSignInFormValidated = (email, password, res) => {
    if (!email || !password) {
-      res.status(400)
-      throw new Error('You need both email and passowrd')
+      return false
    }
+   return true
 }
 
-export const validateIfUserExists = (user, res) => {
+export const checkIfUserExists = (user) => {
    if (!user) {
-        res.status(400)
-        throw new Error('user or password is invalid')
+        return false
    }
+   return true
 }
 
 const checkUserPassword = async (user, password) => await bcrypt.compare(password, user.password)
@@ -39,22 +39,11 @@ export const getUserIdFromToken = (token, res) => {
    const { id } = jwt.verify(token, process.env.JWT_SECRET)
    return id
 }
-export const validateIfPasswordCorrect = async (user, password, res) => {
-   const isPasswordCorrect = await checkUserPassword(user, password)
-   console.log('ips', isPasswordCorrect)
-   if (!isPasswordCorrect) {
-      res.status(401)
-      throw new Error('user or password is invalid')
-   }
+export const isPasswordCorrect = async (user, password) => {
+   return await checkUserPassword(user, password)
 }
 
-export const checkIfUser = (user) => {
-   if (!user) {
-      throw new Error(`Server Error: Improper use of get user's info function`)
-   }
-}
-
-export const getNewUserObj = (user, formData) => {
+export const createNewUserObj = (user, formData) => {
    const newUserObj = {}
    
    newUserObj.name = formData.name || user.name

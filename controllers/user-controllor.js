@@ -1,15 +1,17 @@
 import User from '../models/user-model.js'
 import asyncHandler from 'express-async-handler'
-import { createToken, validateIfUserExists, validateSignInFields, validateIfPasswordCorrect, checkIfUser, getNewUserObj, validateRegistorFields } from '../utils/user/user-utils.js'
+import { createToken, isRegistorFormValidated, checkIfUserExists, createNewUserObj, isSignInFormValidated, isPasswordCorrect } from '../utils/user/user-utils.js'
+import { throwError } from '../utils/errorHandler/errorHandler-utils.js';
 const oneDayInMilliseconds = 1000 * 60 * 60 * 24; // 1 day in milliseconds
 
 // Create User
 export const createUser = asyncHandler(async (req, res, next) => {
    const body = req.body
 
-   validateRegistorFields(body, res)
+   if (!isRegistorFormValidated(body)) 
+      throwError(res, 400, 'All fields are required')
 
-   const {password, ...user} = await User.create(body)
+   const user = await User.create(body)
    res.status(201).json(user)
 })
 
@@ -17,12 +19,15 @@ export const createUser = asyncHandler(async (req, res, next) => {
 export const signInUser = asyncHandler(async (req, res) => {
    const {email, password} = req.body
 
-   validateSignInFields(email, password, res)
+   if (!isSignInFormValidated(email, password)) 
+      throwError(res, 400, 'You need both email and passowrd')
 
    const user = await User.findOne({email})
-   validateIfUserExists(user, res)
+   if (!checkIfUserExists(user))
+      throwError(res, 400, 'user or password is invalid')
 
-   await validateIfPasswordCorrect(user, password, res)
+   if (await isPasswordCorrect(user, password) !== true)
+      throwError(res, 401, 'user or password is invalid')
          
    const {_id, name, photo, phone, bio} = user
    
@@ -57,7 +62,9 @@ export const signOutUser = asyncHandler(async (req, res) => {
 export const getUser = asyncHandler(async (req, res) => {
    const user = req.user
    
-   checkIfUser(user)
+   if (!user) {
+      throwError(res, 500 `Server Error: Improper use of get user's info function`)
+   }
 
    const {_id, name, email, photo, phone, bio} = user
 
@@ -72,9 +79,11 @@ export const updateUser = asyncHandler(async (req, res) => {
    const body = req.body
    const { _id } = user
    
-   checkIfUser(user)
+   if (!user) {
+      throwError(res, 500 `Server Error: Improper use of get user's info function`)
+   }
 
-   const newUserObj = getNewUserObj(user, body)
+   const newUserObj = createNewUserObj(user, body)
 
    const updatedUser = await User.findOneAndUpdate(
       {_id}, 

@@ -9,3 +9,10 @@ export const getErrorMessage = (statusCode) => {
          break;
    }
 }
+
+export const throwError = (res, statusCode = 500, errorMessage = null) => {
+   if (errorMessage === null)  
+      getErrorMessage(statusCode)
+   res.status(statusCode)
+   throw new Error(errorMessage)
+}
