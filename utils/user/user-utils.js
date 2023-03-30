@@ -1,12 +1,11 @@
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import asyncHandler from 'express-async-handler'
 
 export const createToken = (id) => {
    return jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: '1d'})
 }
 
-export const isRegistorFormValidated = (formData, res) => {
+export const isRegistorFormValidated = (formData) => {
    const {email, password, name} = formData
 
    if (!email || !password || !name) 
@@ -14,7 +13,7 @@ export const isRegistorFormValidated = (formData, res) => {
    
    return true
 }
-export const isSignInFormValidated = (email, password, res) => {
+export const isSignInFormValidated = (email, password) => {
    if (!email || !password) {
       return false
    }
