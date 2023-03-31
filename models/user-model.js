@@ -19,8 +19,7 @@ const userSchema = mongoose.Schema({
      password: {
           type: String,
           required: [true, `A user's password is required`],
-          minLength: [8, 'Password must be at least 8 characters long'],
-          maxLength: [50, 'Password must be no more then 50 characters long']
+          minLength: [60, 'Encripted password must be at least 60 characters long'],
      },
      photo: {
           type: String,
@@ -47,14 +46,22 @@ const userSchema = mongoose.Schema({
 })
 
 // Encrypt Password
-userSchema.pre('save', async function(next) {
-     if (!this.isModified('password')) 
+userSchema.pre('findOneAndUpdate', async function(next) {
+     const update = this.getUpdate()
+   
+     if (!update.password || typeof update.password !== 'string') {
           return next()
+     }
 
-     const salt = await bcrypt.genSalt(10)
-     const hashedPassword = await bcrypt.hash(this.password, salt)
-     this.password = hashedPassword
-     next()
+     try {
+          const salt = await bcrypt.genSalt(10)
+          const hashedPassword = await bcrypt.hash(update.password, salt)
+
+          this.getUpdate().password = hashedPassword
+          next()
+     } catch (error) {
+          return next(error)
+     }
 })
 
 export default mongoose.model('User', userSchema)
