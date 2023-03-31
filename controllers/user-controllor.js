@@ -1,6 +1,8 @@
 import User from '../models/user-model.js'
 import asyncHandler from 'express-async-handler'
-import { createToken, isRegistorFormValidated, checkIfUserExists, createNewUserObj, isSignInFormValidated, isPasswordCorrect } from '../utils/user/user-utils.js'
+import { createToken, isRegistorFormValidated, checkIfUserExists, 
+   createNewUserObj, isSignInFormValidated, isPasswordCorrect, 
+   isPasswordTooShort, isPasswordTooLong, isChangePasswordFormFilled } from '../utils/user/user-utils.js'
 import { throwError } from '../utils/errorHandler/errorHandler-utils.js';
 const oneDayInMilliseconds = 1000 * 60 * 60 * 24; // 1 day in milliseconds
 
@@ -90,6 +92,36 @@ export const updateUser = asyncHandler(async (req, res) => {
       newUserObj, 
       {new: true, runValidators: true}
    ).select('-password')
+   
+   res.json(updatedUser)
+})
+
+// User Udates Password
+export const updatePassword = asyncHandler(async (req, res) => {
+   const { _id } = req.user
+   const { old_password, new_password } = req.body
+   const user = await User.findOne({ _id })
+   
+   if (!user) {
+      throwError(res, 500 `Server Error: Improper use of get user's info function`)
+   }
+   
+   if (!isChangePasswordFormFilled(old_password,  new_password) )
+      throwError(res, 400, 'You are missing fields')
+   if (isPasswordTooShort(new_password))
+      throwError(res, 400, 'Password must be at least 8 characters long')
+   if (isPasswordTooLong(new_password))
+      throwError(res, 400, 'Password must be shorter then 23 characters long')
+
+   if (!(await isPasswordCorrect(user, old_password))) {
+      throwError(res, 401, 'wrong password')
+   }
+   
+   const updatedUser = await User.findOneAndUpdate(
+      {_id}, 
+      { password: new_password }, 
+      {new: true, runValidators: true}
+   )
    
    res.json(updatedUser)
 })

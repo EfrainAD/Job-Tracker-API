@@ -19,6 +19,15 @@ export const isSignInFormValidated = (email, password) => {
    }
    return true
 }
+export const isChangePasswordFormFilled = (old_password, new_password) => {
+   if (!old_password || !new_password ) {
+      return false
+   }
+   return true
+}
+export const isPasswordTooShort = (password) => password.length < 8
+
+export const isPasswordTooLong = (password) => password.length >= 23
 
 export const checkIfUserExists = (user) => {
    if (!user) {
@@ -39,6 +48,7 @@ export const getUserIdFromToken = (token, res) => {
    return id
 }
 export const isPasswordCorrect = async (user, password) => {
+   console.log('check', await checkUserPassword(user, password))
    return await checkUserPassword(user, password)
 }
 
