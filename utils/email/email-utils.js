@@ -7,7 +7,9 @@ export const isValidEmail = (email) => {
 }
 
 export const sendPasswordResetEmail = async (user, resetToken) => {
-   const resetUrl = `${process.env.FRONT_PAGE_URL}/resetpassword/${resetToken}`
+   const resetUrl = `${
+      process.env.FRONT_PAGE_URL || 'http://127.0.0.1:3000'
+   }/resetpassword/${resetToken}`
    const minutesEmailExpires = process.env.EXPIRES_IN_MINUTES
    const subject = 'Reset Password Request'
    const send_to = user.email
@@ -27,7 +29,7 @@ export const sendPasswordResetEmail = async (user, resetToken) => {
    try {
       await sendEmail(subject, message, send_to, sent_from)
       return {
-         sussess: true,
+         success: true,
          message: 'A reset email has been sent',
       }
    } catch (error) {

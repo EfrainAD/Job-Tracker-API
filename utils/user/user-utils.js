@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
 import Token from '../../models/token-model.js'
+import User from '../../models/user-model.js'
 const EXPIRES_IN_MINUTES = process.env.EXPIRES_IN_MINUTES
 
 export const createToken = (id) => {
@@ -20,6 +21,19 @@ export const savePasswordResetToken = async (
       createdAt: Date.now(),
       expiresAt: Date.now() + expiresInMernuts * (60 * 1000), // convert minutes to milliseconds
    })
+export const getUserFromHashedResetToken = async (hashedToken) => {
+   const userToken = await Token.findOne({
+      token: hashedToken,
+      expiresAt: { $gt: Date.now() },
+   })
+   if (!userToken) throw new Error('Token not found, or expired')
+
+   // Get User from Token's owner
+   const user = await User.findOne({ _id: userToken.userId })
+   if (!user) throw new Error('Error when retreaving user')
+
+   return user
+}
 export const createPasswordResetToken = async (userId) =>
    crypto.randomBytes(32).toString('hex') + userId
 export const createHashedToken = (token) =>

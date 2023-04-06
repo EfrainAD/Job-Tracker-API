@@ -14,6 +14,7 @@ import {
    createPasswordResetToken,
    createHashedToken,
    savePasswordResetToken,
+   getUserFromHashedResetToken,
 } from '../utils/user/user-utils.js'
 import { throwError } from '../utils/errorHandler/errorHandler-utils.js'
 import {
@@ -127,7 +128,7 @@ export const updateUser = asyncHandler(async (req, res) => {
    res.json(updatedUser)
 })
 
-// User Udates Password
+// User Updates Password
 export const updatePassword = asyncHandler(async (req, res) => {
    const { _id } = req.user
    const { old_password, new_password } = req.body
@@ -185,6 +186,37 @@ export const requestPasswordReset = asyncHandler(async (req, res) => {
    } catch (error) {
       throwError(res, 500, error)
    }
+})
+
+export const resetPassword = asyncHandler(async (req, res) => {
+   const { new_password } = req.body
+   const { resetToken } = req.params
+   const hashedToken = createHashedToken(resetToken)
+
+   // Validation
+   if (!new_password) throwError(res, 400, 'Password Field is requried')
+   if (!resetToken) throwError(res, 404, 'Bad link')
+
+   // Get a validated user's token from DB
+   let user
+   try {
+      user = await getUserFromHashedResetToken(hashedToken)
+   } catch (error) {
+      throwError(res, 404, error)
+   }
+
+   await User.findOneAndUpdate(
+      { _id: user._id },
+      { password: new_password },
+      { new: true, runValidators: true }
+   )
+
+   clearPasswordResetToken(user._id)
+
+   res.status(200).json({
+      success: true,
+      message: 'Password Reset Successful',
+   })
 })
 
 // Get All Users // TO BE REMOVED
