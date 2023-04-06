@@ -1,16 +1,35 @@
 import bcrypt from 'bcryptjs'
+import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
+import Token from '../../models/token-model.js'
+const EXPIRES_IN_MINUTES = process.env.EXPIRES_IN_MINUTES
 
 export const createToken = (id) => {
-   return jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: '1d'})
+   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1d' })
 }
+export const clearPasswordResetToken = async (userId) =>
+   await Token.findOneAndDelete({ userId: userId })
+export const savePasswordResetToken = async (
+   userId,
+   hashedToken,
+   expiresInMernuts = EXPIRES_IN_MINUTES
+) =>
+   await Token.create({
+      userId: userId,
+      token: hashedToken,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + expiresInMernuts * (60 * 1000), // convert minutes to milliseconds
+   })
+export const createPasswordResetToken = async (userId) =>
+   crypto.randomBytes(32).toString('hex') + userId
+export const createHashedToken = (token) =>
+   crypto.createHash('sha256').update(token).digest('hex')
 
 export const isRegistorFormValidated = (formData) => {
-   const {email, password, name} = formData
+   const { email, password, name } = formData
 
-   if (!email || !password || !name) 
-      return false
-   
+   if (!email || !password || !name) return false
+
    return true
 }
 export const isSignInFormValidated = (email, password) => {
@@ -20,7 +39,7 @@ export const isSignInFormValidated = (email, password) => {
    return true
 }
 export const isChangePasswordFormFilled = (old_password, new_password) => {
-   if (!old_password || !new_password ) {
+   if (!old_password || !new_password) {
       return false
    }
    return true
@@ -31,12 +50,13 @@ export const isPasswordTooLong = (password) => password.length >= 23
 
 export const checkIfUserExists = (user) => {
    if (!user) {
-        return false
+      return false
    }
    return true
 }
 
-const checkUserPassword = async (user, password) => await bcrypt.compare(password, user.password)
+const checkUserPassword = async (user, password) =>
+   await bcrypt.compare(password, user.password)
 
 export const getUserIdFromToken = (token, res) => {
    if (!token) {
@@ -47,14 +67,12 @@ export const getUserIdFromToken = (token, res) => {
    const { id } = jwt.verify(token, process.env.JWT_SECRET)
    return id
 }
-export const isPasswordCorrect = async (user, password) => {
-   console.log('check', await checkUserPassword(user, password))
-   return await checkUserPassword(user, password)
-}
+export const isPasswordCorrect = async (user, password) =>
+   await checkUserPassword(user, password)
 
 export const createNewUserObj = (user, formData) => {
    const newUserObj = {}
-   
+
    newUserObj.name = formData.name || user.name
    newUserObj.photo = formData.photo || user.photo
    newUserObj.phone = formData.phone || user.phone
