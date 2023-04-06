@@ -6,14 +6,14 @@ export const isValidEmail = (email) => {
    return emailRegex.test(email)
 }
 
-export const sendPasswordRestEmail = async (user, resetToken) => {
+export const sendPasswordResetEmail = async (user, resetToken) => {
    const resetUrl = `${process.env.FRONT_PAGE_URL}/resetpassword/${resetToken}`
    const minutesEmailExpires = process.env.EXPIRES_IN_MINUTES
    const subject = 'Reset Password Request'
    const send_to = user.email
    const sent_from = process.env.EMAIL_USER
    const message = `
-        <h2>hello ${user.name}</h2>
+        <h2>Hello ${user.name}</h2>
         <p>You requested a password reset</p>
         <p>Please use the url below to reset your password</p>
         <p>This link is valid for only ${minutesEmailExpires} minutes.</p>
@@ -23,7 +23,7 @@ export const sendPasswordRestEmail = async (user, resetToken) => {
         <p>Regards...</p>
         <p>Stock Management Team</p>
    `
-   console.log('hi')
+
    try {
       await sendEmail(subject, message, send_to, sent_from)
       return {
