@@ -1,3 +1,4 @@
+import { throwError } from '../errorHandler/errorHandler-utils.js'
 import sendEmail from './emailSender.js'
 
 export const isValidEmail = (email) => {
@@ -33,9 +34,9 @@ export const sendPasswordResetEmail = async (user, resetToken) => {
          message: 'A reset email has been sent',
       }
    } catch (error) {
-      throw new Error(
-         "Failed to send the email to reset the user's password, message return:",
-         error
+      throwError(
+         500,
+         `Failed to send the email to reset the user's password, message return: ${error.message}`
       )
    }
 }
