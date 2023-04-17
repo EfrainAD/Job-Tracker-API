@@ -39,14 +39,13 @@ export const signInUser = asyncHandler(async (req, res) => {
    const { email, password } = req.body
 
    if (!isSignInFormValidated(email, password))
-      throwError(res, 400, 'You need both email and passowrd')
+      throwError(400, 'You need both email and passowrd')
 
    const user = await User.findOne({ email })
-   if (!checkIfUserExists(user))
-      throwError(res, 400, 'user or password is invalid')
+   if (!checkIfUserExists(user)) throwError(400, 'user or password is invalid')
 
    if ((await isPasswordCorrect(user, password)) !== true)
-      throwError(res, 401, 'user or password is invalid')
+      throwError(401, 'user or password is invalid')
 
    const { _id, name, photo, phone, bio } = user
 
@@ -86,11 +85,9 @@ export const signOutUser = asyncHandler(async (req, res) => {
 export const getUser = asyncHandler(async (req, res) => {
    const user = req.user
 
+   // Path should be pertected
    if (!user) {
-      throwError(
-         res,
-         500`Server Error: Improper use of get user's info function`
-      )
+      throwError(500, `Server Error: Improper use of get user's info function`)
    }
 
    const { _id, name, email, photo, phone, bio } = user
@@ -111,11 +108,9 @@ export const updateUser = asyncHandler(async (req, res) => {
    const body = req.body
    const { _id } = user
 
+   // Path should be pertected
    if (!user) {
-      throwError(
-         res,
-         500`Server Error: Improper use of get user's info function`
-      )
+      throwError(500`Server Error: Improper use of get user's info function`)
    }
 
    const newUserObj = createNewUserObj(user, body)
@@ -134,22 +129,20 @@ export const updatePassword = asyncHandler(async (req, res) => {
    const { old_password, new_password } = req.body
    const user = await User.findOne({ _id })
 
+   // Path should be pertected
    if (!user) {
-      throwError(
-         res,
-         500`Server Error: Improper use of get user's info function`
-      )
+      throwError(500`Server Error: Improper use of get user's info function`)
    }
 
    if (!isChangePasswordFormFilled(old_password, new_password))
-      throwError(res, 400, 'You are missing fields')
+      throwError(400, 'You are missing fields')
    if (isPasswordTooShort(new_password))
-      throwError(res, 400, 'Password must be at least 8 characters long')
+      throwError(400, 'Password must be at least 8 characters long')
    if (isPasswordTooLong(new_password))
-      throwError(res, 400, 'Password must be shorter then 23 characters long')
+      throwError(400, 'Password must be shorter then 23 characters long')
 
    if (!(await isPasswordCorrect(user, old_password))) {
-      throwError(res, 401, 'Wrong password')
+      throwError(401, 'Wrong password')
    }
 
    const updatedUser = await User.findOneAndUpdate(
@@ -164,12 +157,11 @@ export const updatePassword = asyncHandler(async (req, res) => {
 export const requestPasswordReset = asyncHandler(async (req, res) => {
    const { email } = req.body
 
-   if (!email) throwError(res, 400, `Email address was not provided`)
-   if (!isValidEmail(email))
-      throwError(res, 400, `This is not valid email address`)
+   if (!email) throwError(400, `Email address was not provided`)
+   if (!isValidEmail(email)) throwError(400, `This is not valid email address`)
 
    const user = await User.findOne({ email: email })
-   if (!user) throwError(res, 400, `User does not exist by that email`)
+   if (!user) throwError(400, `User does not exist by that email`)
 
    // If user has any
    clearPasswordResetToken(user._id)
@@ -180,12 +172,9 @@ export const requestPasswordReset = asyncHandler(async (req, res) => {
 
    savePasswordResetToken(user._id, hashedToken)
 
-   try {
-      const response = await sendPasswordResetEmail(user, resetToken)
-      res.status(200).json(response)
-   } catch (error) {
-      throwError(res, 500, error)
-   }
+   const response = await sendPasswordResetEmail(user, resetToken)
+
+   res.status(200).json(response)
 })
 
 export const resetPassword = asyncHandler(async (req, res) => {
@@ -194,15 +183,15 @@ export const resetPassword = asyncHandler(async (req, res) => {
    const hashedToken = createHashedToken(resetToken)
 
    // Validation
-   if (!new_password) throwError(res, 400, 'Password Field is requried')
-   if (!resetToken) throwError(res, 404, 'Bad link')
+   if (!new_password) throwError(400, 'Password Field is requried')
+   if (!resetToken) throwError(404, 'Bad link')
 
    // Get a validated user's token from DB
    let user
    try {
       user = await getUserFromHashedResetToken(hashedToken)
    } catch (error) {
-      throwError(res, 404, error)
+      throwError(404, error)
    }
 
    await User.findOneAndUpdate(

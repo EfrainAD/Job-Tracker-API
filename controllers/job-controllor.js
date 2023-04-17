@@ -6,10 +6,10 @@ import { isCreateJobFormValidated } from '../utils/user/job-utils.js'
 // Create Job
 export const createJob = asyncHandler(async (req, res, next) => {
    const body = req.body
-   
-   if (!isCreateJobFormValidated(body)) 
-      throwError(res, 400, 'Missing one or more required fields')
-   
+
+   if (!isCreateJobFormValidated(body))
+      throwError(400, 'Missing one or more required fields')
+
    const job = await Job.create(req.body)
    res.status(201).json(job)
 })
