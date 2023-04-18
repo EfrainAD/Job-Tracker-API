@@ -21,11 +21,13 @@ const sendEmail = async (subject, message, send_to, sent_from, reply_to) => {
       subject: subject,
       html: message,
    }
-   // Send Email
-   transporter.sendMail(options, function (err, info) {
-      if (err) console.log(err)
-      else console.log('Info from transporter.sendMail', info)
-   })
+
+   try {
+      const res = await transporter.sendMail(options)
+      console.log('transporter.sendMail response:', res)
+   } catch (error) {
+      throw new Error(error.message)
+   }
 }
 
 export default sendEmail
