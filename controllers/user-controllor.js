@@ -22,6 +22,7 @@ import {
    sendPasswordResetEmail,
 } from '../utils/email/email-utils.js'
 const oneDayInMilliseconds = 1000 * 60 * 60 * 24 // 1 day in milliseconds
+import { uploadImage } from '../services/cloudinary/cloudinary.service.js'
 
 // Create User
 export const createUser = asyncHandler(async (req, res, next) => {
@@ -123,6 +124,27 @@ export const updateUser = asyncHandler(async (req, res) => {
    res.json(updatedUser)
 })
 
+// Update User's Profile Picture
+export const updateUserPicture = asyncHandler(async (req, res) => {
+   const { _id } = req.user
+   const file = req.file
+
+   const uploadedImage = await uploadImage(_id, file)
+
+   // Update user's picture URL in database
+   const updatedPhoto = await User.findOneAndUpdate(
+      { _id },
+      { photo: uploadedImage.secure_url },
+      { new: true, runValidators: true }
+   ).select('photo')
+
+   res.json({
+      success: true,
+      message: 'Profile picture was updated successfully',
+      updatedPhoto: updatedPhoto.photo,
+   })
+})
+
 // User Updates Password
 export const updatePassword = asyncHandler(async (req, res) => {
    const { _id } = req.user
@@ -154,6 +176,7 @@ export const updatePassword = asyncHandler(async (req, res) => {
    res.json(updatedUser)
 })
 
+// User Request to Reset their Password
 export const requestPasswordReset = asyncHandler(async (req, res) => {
    const { email } = req.body
 
@@ -177,6 +200,7 @@ export const requestPasswordReset = asyncHandler(async (req, res) => {
    res.status(200).json(response)
 })
 
+// User Reset their Password from Email Token.
 export const resetPassword = asyncHandler(async (req, res) => {
    const { new_password } = req.body
    const { resetToken } = req.params
