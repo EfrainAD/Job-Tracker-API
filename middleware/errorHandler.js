@@ -2,7 +2,7 @@ import { getErrorMessage } from '../utils/errorHandler/errorHandler-utils.js'
 
 const errorHandler = (err, req, res, next) => {
    const statusCode = err.statusCode || 500
-   const errorMessage = err.message
+   const errorMessage = err.message || getErrorMessage(statusCode)
 
    res.status(statusCode)
    res.json({
