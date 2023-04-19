@@ -36,7 +36,7 @@ export const sendPasswordResetEmail = async (user, resetToken) => {
    } catch (error) {
       throwError(
          500,
-         `Failed to send the email to reset the user's password, message return: ${error.message}`
+         `Failed to send the email to reset the user's password, the error message return: ${error.message}`
       )
    }
 }
