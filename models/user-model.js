@@ -17,6 +17,10 @@ const userSchema = mongoose.Schema(
             'Email not valid',
          ],
       },
+      emailConfirmed: {
+         type: Boolean,
+         default: false,
+      },
       password: {
          type: String,
          required: [true, `A user's password is required`],
@@ -65,19 +69,7 @@ userSchema.pre('validate', async function (next) {
    }
 })
 
-// userSchema.pre('save', async function (next) {
-//    try {
-//       console.log('hi pass')
-//       if (this.isModified('password')) {
-//          const salt = await bcrypt.genSalt(10)
-//          const hashedPassword = await bcrypt.hash(this.password, salt)
-//          this.password = hashedPassword
-//       }
-//       next()
-//    } catch (error) {
-//       next(error)
-//    }
-// })
+// findOneAndUpdate
 userSchema.pre('findOneAndUpdate', async function (next) {
    const update = this.getUpdate()
 
@@ -95,5 +87,19 @@ userSchema.pre('findOneAndUpdate', async function (next) {
       return next(error)
    }
 })
+
+// userSchema.pre('save', async function (next) {
+//    try {
+//       console.log('hi pass')
+//       if (this.isModified('password')) {
+//          const salt = await bcrypt.genSalt(10)
+//          const hashedPassword = await bcrypt.hash(this.password, salt)
+//          this.password = hashedPassword
+//       }
+//       next()
+//    } catch (error) {
+//       next(error)
+//    }
+// })
 
 export default mongoose.model('User', userSchema)
