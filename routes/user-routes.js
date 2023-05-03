@@ -12,6 +12,7 @@ import {
    updatePassword,
    updateUser,
    updateUserPicture,
+   verifyEmail,
 } from '../controllers/user-controllor.js'
 import requireUserAuth from '../middleware/auth-middleware.js'
 import upload from '../middleware/fileUploader.js'
@@ -35,6 +36,7 @@ router.post('/forgotpassword', requestPasswordReset)
 router.put('/resetpassword/:resetToken', resetPassword)
 // email verification
 router.post('/requestemailverification', requestEmailVerification)
+router.put('/verifyemail/:resetToken', verifyEmail)
 
 router.get('/', getUsers)
 

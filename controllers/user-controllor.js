@@ -257,6 +257,36 @@ export const requestEmailVerification = asyncHandler(async (req, res) => {
    res.status(200).json(response)
 })
 
+// Verify the user's email
+export const verifyEmail = asyncHandler(async (req, res) => {
+   const { resetToken } = req.params
+   const hashedToken = createHashedToken(resetToken)
+
+   // Validation
+   if (!resetToken) throwError(404, 'Bad link')
+
+   // Get a validated user's token from DB
+   let user
+   try {
+      user = await getUserFromHashedResetToken(hashedToken)
+   } catch (error) {
+      throwError(404, error)
+   }
+
+   await User.findOneAndUpdate(
+      { _id: user._id },
+      { emailConfirmed: true },
+      { new: true, runValidators: true }
+   )
+
+   clearPasswordResetToken(user._id)
+
+   res.status(200).json({
+      success: true,
+      message: 'Verified Email Successful',
+   })
+})
+
 // Get All Users // TO BE REMOVED
 export const getUsers = asyncHandler(async (req, res) => {
    const user = await User.find({})
