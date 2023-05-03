@@ -19,6 +19,7 @@ import {
 import { throwError } from '../utils/errorHandler/errorHandler-utils.js'
 import {
    isValidEmail,
+   sendEmailVerificationEmail,
    sendPasswordResetEmail,
 } from '../utils/email/email-utils.js'
 const oneDayInMilliseconds = 1000 * 60 * 60 * 24 // 1 day in milliseconds
@@ -230,6 +231,30 @@ export const resetPassword = asyncHandler(async (req, res) => {
       success: true,
       message: 'Password Reset Successful',
    })
+})
+
+// Request Email Verification
+export const requestEmailVerification = asyncHandler(async (req, res) => {
+   const { email } = req.body
+
+   if (!email) throwError(400, `Email address was not provided`)
+   if (!isValidEmail(email)) throwError(400, `This is not valid email address`)
+
+   const user = await User.findOne({ email: email })
+   if (!user) throwError(400, `User does not exist by that email`)
+
+   // If user has any
+   clearPasswordResetToken(user._id)
+
+   // Create & Encrypt Token
+   const resetToken = await createPasswordResetToken(user._id)
+   const hashedToken = createHashedToken(resetToken)
+
+   savePasswordResetToken(user._id, hashedToken)
+
+   const response = await sendEmailVerificationEmail(user, resetToken)
+
+   res.status(200).json(response)
 })
 
 // Get All Users // TO BE REMOVED

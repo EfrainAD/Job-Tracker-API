@@ -4,6 +4,7 @@ import {
    createUser,
    getUser,
    getUsers,
+   requestEmailVerification,
    requestPasswordReset,
    resetPassword,
    signInUser,
@@ -32,6 +33,8 @@ router.post(
 router.patch('/changepassword', requireUserAuth, updatePassword)
 router.post('/forgotpassword', requestPasswordReset)
 router.put('/resetpassword/:resetToken', resetPassword)
+// email verification
+router.post('/requestemailverification', requestEmailVerification)
 
 router.get('/', getUsers)
 
