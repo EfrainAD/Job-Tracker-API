@@ -23,7 +23,10 @@ import {
    sendPasswordResetEmail,
 } from '../utils/email/email-utils.js'
 const oneDayInMilliseconds = 1000 * 60 * 60 * 24 // 1 day in milliseconds
-import { uploadImage } from '../services/cloudinary/cloudinary.service.js'
+import {
+   signImgCredentials,
+   uploadImage,
+} from '../services/cloudinary/cloudinary.service.js'
 
 // Create User
 export const createUser = asyncHandler(async (req, res, next) => {
@@ -286,6 +289,15 @@ export const verifyEmail = asyncHandler(async (req, res) => {
       message: 'Verified Email Successful',
    })
 })
+
+// Signature for uploading an image from the client side
+export const signImageUploadCredentials = (req, res) => {
+   const userId = req.user._id
+
+   const { timestamp, signature, api_key } = signImgCredentials(userId)
+
+   res.status(200).json({ timestamp, signature, api_key })
+}
 
 // Get All Users // TO BE REMOVED
 export const getUsers = asyncHandler(async (req, res) => {

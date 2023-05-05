@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary'
 import { throwError } from '../../utils/errorHandler/errorHandler-utils.js'
+const folder = 'Job Tracker App'
 
 const fileToDataUri = (file) => {
    const buffer = file.buffer
@@ -15,7 +16,7 @@ export const uploadImage = async (public_id, file) => {
 
       return await cloudinary.uploader.upload(dataUri, {
          public_id,
-         folder: 'Job Tracker App',
+         folder,
          resource_type: 'image',
          overwrite: true,
       })
@@ -26,4 +27,21 @@ export const uploadImage = async (public_id, file) => {
          'Something went wrong when uploading, file may be larger than 100 MB'
       )
    }
+}
+
+export const signImgCredentials = (public_id) => {
+   const timestamp = Math.round(new Date().getTime() / 1000)
+   const apiSecret = cloudinary.config().api_secret
+   const api_key = cloudinary.config().api_key
+
+   const signature = cloudinary.utils.api_sign_request(
+      {
+         timestamp,
+         folder,
+         public_id,
+      },
+      apiSecret
+   )
+
+   return { timestamp, signature, api_key }
 }

@@ -7,6 +7,7 @@ import {
    requestEmailVerification,
    requestPasswordReset,
    resetPassword,
+   signImageUploadCredentials,
    signInUser,
    signOutUser,
    updatePassword,
@@ -37,6 +38,8 @@ router.put('/resetpassword/:resetToken', resetPassword)
 // email verification
 router.post('/requestemailverification', requestEmailVerification)
 router.put('/verifyemail/:resetToken', verifyEmail)
+// Cloudinary Signiture
+router.get('/imagecredentials', requireUserAuth, signImageUploadCredentials)
 
 router.get('/', getUsers)
 
