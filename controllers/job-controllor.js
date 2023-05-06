@@ -25,11 +25,21 @@ export const getJobs = asyncHandler(async (req, res) => {
    const jobs = await Job.find({ user: userId }).select(
       'companyName jobTitle remote recruiter dateApplied rejectionDate firstInterviewDate technicalChallengeInterviewDate secondInterviewDate'
    )
-   // .populate('recruiter', '_id nam')
+   // .populate('recruiter', '_id name')
 
    res.status(200).json(jobs)
 })
+
 // Get A Job
+export const getJob = asyncHandler(async (req, res) => {
+   const userId = req.user._id
+   const jobId = req.params.id
+
+   const job = await Job.find({ user: userId, _id: jobId })
+   // .populate('recruiter', '_id name')
+
+   res.status(200).json(job)
+})
 
 // Update Job
 
