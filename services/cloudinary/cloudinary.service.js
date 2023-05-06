@@ -33,6 +33,7 @@ export const signImgCredentials = (public_id) => {
    const timestamp = Math.round(new Date().getTime() / 1000)
    const apiSecret = cloudinary.config().api_secret
    const api_key = cloudinary.config().api_key
+   if (!public_id) throwError(400, 'Public ID missing for signature')
 
    const signature = cloudinary.utils.api_sign_request(
       {

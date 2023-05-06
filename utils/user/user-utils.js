@@ -3,6 +3,7 @@ import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
 import Token from '../../models/token-model.js'
 import User from '../../models/user-model.js'
+import { throwError } from '../errorHandler/errorHandler-utils.js'
 const EXPIRES_IN_MINUTES = process.env.EXPIRES_IN_MINUTES
 
 export const createToken = (id) => {
@@ -72,10 +73,9 @@ export const checkIfUserExists = (user) => {
 const checkUserPassword = async (user, password) =>
    await bcrypt.compare(password, user.password)
 
-export const getUserIdFromToken = (token, res) => {
+export const getUserIdFromToken = (token) => {
    if (!token) {
-      res.status(401)
-      throw new Error()
+      throwError(401, 'No user token provided')
    }
 
    const { id } = jwt.verify(token, process.env.JWT_SECRET)
