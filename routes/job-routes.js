@@ -1,11 +1,19 @@
 import express from 'express'
-import { createJob, deleteJob, getJobs } from '../controllers/job-controllor.js'
+import {
+   createJob,
+   deleteJob,
+   getALLJobs,
+   getJobs,
+} from '../controllers/job-controllor.js'
 import requireUserAuth from '../middleware/auth-middleware.js'
 const router = express.Router()
 
 //Routes
 router.post('/', requireUserAuth, createJob)
-router.get('/', getJobs)
+router.get('/', requireUserAuth, getJobs)
 router.delete('/:id', requireUserAuth, deleteJob)
+
+// Development, needs be removed
+router.get('/dev', getALLJobs)
 
 export default router
