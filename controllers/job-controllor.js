@@ -35,13 +35,43 @@ export const getJob = asyncHandler(async (req, res) => {
    const userId = req.user._id
    const jobId = req.params.id
 
-   const job = await Job.find({ user: userId, _id: jobId })
+   const job = await Job.findOne({ user: userId, _id: jobId })
    // .populate('recruiter', '_id name')
+
+   if (!job) {
+      throwError(
+         404,
+         'Job not found, job does not exist or user does not have access.'
+      )
+   }
 
    res.status(200).json(job)
 })
 
-// Update Job
+// Update Job - PATCH
+export const updateJob = asyncHandler(async (req, res) => {
+   const userId = req.user._id
+   const jobId = req.params.id
+   const body = req.body
+
+   const updatedBody = { ...body, user: userId }
+   // recruiter: Stuff will need to be here.
+
+   const updatedJob = await Job.findOneAndUpdate(
+      { _id: jobId, user: userId },
+      updatedBody,
+      { new: true, runValidators: true }
+   )
+
+   if (!updatedJob) {
+      throwError(
+         404,
+         'Job not found, job does not exist or user does not have access.'
+      )
+   }
+
+   res.status(200).json(updatedJob)
+})
 
 // DELETE - Job
 export const deleteJob = asyncHandler(async (req, res) => {
