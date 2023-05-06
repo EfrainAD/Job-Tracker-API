@@ -54,10 +54,12 @@ const jobSchema = new mongoose.Schema({
       type: String,
       trim: true,
    },
-   recruiter: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Recruiter',
-   },
+   recruiter: [
+      {
+         type: mongoose.Schema.Types.ObjectId,
+         ref: 'Recruiter',
+      },
+   ],
    dateApplied: {
       type: Date,
       required: [true, 'The application date is required'],
