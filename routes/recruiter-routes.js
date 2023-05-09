@@ -14,5 +14,6 @@ import {
 router.post('/', requireUserAuth, createRecruiter)
 router.get('/', requireUserAuth, getRecruiters)
 router.get('/:id', requireUserAuth, getRecruiter)
+router.patch('/:id', requireUserAuth, updateRecruiter)
 
 export default router

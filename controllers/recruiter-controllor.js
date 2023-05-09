@@ -43,3 +43,27 @@ export const getRecruiter = asyncHandler(async (req, res) => {
 
    res.status(200).json(recruiter)
 })
+
+// Update Recruiter - PATCH
+export const updateRecruiter = asyncHandler(async (req, res) => {
+   const userId = req.user._id
+   const recruiterId = req.params.id
+   const body = req.body
+
+   const updatedBody = { ...body, user: userId }
+
+   const updatedRecruiter = await Recruiter.findOneAndUpdate(
+      { _id: recruiterId, user: userId },
+      updatedBody,
+      { new: true, runValidators: true }
+   )
+
+   if (!updatedRecruiter) {
+      throwError(
+         404,
+         'Recruiter not found, recruiter does not exist or user does not have access.'
+      )
+   }
+
+   res.status(200).json(updatedRecruiter)
+})
