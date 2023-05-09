@@ -67,3 +67,28 @@ export const updateRecruiter = asyncHandler(async (req, res) => {
 
    res.status(200).json(updatedRecruiter)
 })
+
+// DELETE - Recruiter
+export const deleteRecruiter = asyncHandler(async (req, res) => {
+   const userId = req.user._id
+   const productId = req.params.id
+
+   const recruiter = await Recruiter.findOneAndDelete({
+      user: userId,
+      _id: productId,
+   })
+
+   if (!recruiter)
+      throwError(
+         404,
+         'Recruiter not found, it does not exist or user does not have access.'
+      )
+
+   res.status(204).send()
+})
+
+// Get All Recruiters REMOVED AT END OF PROJECT
+export const getALLRecruiters = asyncHandler(async (req, res) => {
+   const recruiter = await Recruiter.find({})
+   res.status(201).json(recruiter)
+})
