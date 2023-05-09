@@ -12,5 +12,7 @@ import {
 
 //Routes
 router.post('/', requireUserAuth, createRecruiter)
+router.get('/', requireUserAuth, getRecruiters)
+router.get('/:id', requireUserAuth, getRecruiter)
 
 export default router

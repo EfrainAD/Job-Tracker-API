@@ -17,3 +17,29 @@ export const createRecruiter = asyncHandler(async (req, res, next) => {
 
    res.status(201).json(recruiter)
 })
+
+// Get All User's Recruiters
+export const getRecruiters = asyncHandler(async (req, res) => {
+   const userId = req.user._id
+
+   const recruiters = await Recruiter.find({ user: userId })
+
+   res.status(200).json(recruiters)
+})
+
+// Get A Recruiter
+export const getRecruiter = asyncHandler(async (req, res) => {
+   const userId = req.user._id
+   const recruiterId = req.params.id
+
+   const recruiter = await Recruiter.findOne({ user: userId, _id: recruiterId })
+
+   if (!recruiter) {
+      throwError(
+         404,
+         'Recruiter not found, recruiter does not exist or user does not have access.'
+      )
+   }
+
+   res.status(200).json(recruiter)
+})
