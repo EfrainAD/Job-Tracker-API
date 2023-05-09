@@ -2,6 +2,11 @@ import mongoose from 'mongoose'
 
 const recruiterSchema = new mongoose.Schema(
    {
+      user: {
+         type: mongoose.Schema.Types.ObjectId,
+         require: true,
+         ref: 'User',
+      },
       name: {
          type: String,
          required: [true, 'The recruiter name is required'],
