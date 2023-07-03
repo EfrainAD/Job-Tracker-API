@@ -1,4 +1,5 @@
 import User from '../models/user-model.js'
+import mongoose from 'mongoose'
 import asyncHandler from 'express-async-handler'
 import {
    createToken,
@@ -115,8 +116,10 @@ export const updateUser = asyncHandler(async (req, res) => {
 
    // Path should be pertected
    if (!user) {
-      throwError(500`Server Error: Improper use of get user's info function`)
+      throwError(500, `Server Error: Improper use of get user's info function`)
    }
+
+   // ToDo: If users has couchs or couching send an error.
 
    const newUserObj = createNewUserObj(user, body)
 
@@ -126,6 +129,58 @@ export const updateUser = asyncHandler(async (req, res) => {
    }).select('-password')
 
    res.json(updatedUser)
+})
+
+// Add User's Couch
+export const addUserCouch = asyncHandler(async (req, res) => {
+   const user = req.user
+   const { _id } = user
+   const email = req.body.email
+
+   if (!user) {
+      throwError(500, `Server Error: Improper use of get user's info function`)
+   }
+   if (!email) {
+      throwError(400, `You need the the couch's email`)
+   }
+
+   const newCouch = await User.findOne({ email })
+
+   if (!checkIfUserExists(newCouch))
+      throwError(400, `Couch not found, double check the email provided`)
+
+   // Start Transaction
+   const session = await mongoose.startSession()
+   session.startTransaction()
+
+   try {
+      // Update the requesting user's couch field
+      const usersCouches = await User.findOneAndUpdate(
+         { _id },
+         { $addToSet: { couches: newCouch._id } },
+         { session, new: true }
+      )
+         .select('-_id couches')
+         .populate({ path: 'couches', select: 'name' })
+
+      // Update the couch's field for the user being added as a person being couched
+      await User.updateOne(
+         { _id: newCouch._id, 'couching.couchee': { $ne: _id } },
+         { $push: { couching: { couchee: _id, active: false } } },
+         { session }
+      )
+
+      await session.commitTransaction()
+      session.endSession()
+
+      res.json({
+         usersCouches: usersCouches.couches,
+      })
+   } catch (error) {
+      await session.abortTransaction()
+      session.endSession()
+      throwError(500, `Transaction aborted: ${error}`)
+   }
 })
 
 // Update User's Profile Picture

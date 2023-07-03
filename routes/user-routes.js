@@ -12,6 +12,7 @@ import {
    signOutUser,
    updatePassword,
    updateUser,
+   addUserCouch,
    updateUserPicture,
    verifyEmail,
 } from '../controllers/user-controllor.js'
@@ -31,6 +32,7 @@ router.post(
    upload.single('image'),
    updateUserPicture
 )
+router.post('/updateusercouch', requireUserAuth, addUserCouch)
 // Passwords
 router.patch('/changepassword', requireUserAuth, updatePassword)
 router.post('/forgotpassword', requestPasswordReset)
