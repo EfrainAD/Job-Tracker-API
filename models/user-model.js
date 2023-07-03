@@ -43,6 +43,24 @@ const userSchema = mongoose.Schema(
          maxLength: [250, 'Bio must be shorter then 250 characters long'],
          default: 'bio',
       },
+      couches: [
+         {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+         },
+      ],
+      couching: [
+         {
+            couchee: {
+               type: mongoose.Schema.Types.ObjectId,
+               ref: 'Couch',
+            },
+            active: {
+               type: Boolean,
+               default: false,
+            },
+         },
+      ],
    },
    {
       toJSON: {
