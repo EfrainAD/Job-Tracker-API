@@ -28,6 +28,7 @@ import {
    signImgCredentials,
    uploadImage,
 } from '../services/cloudinary/cloudinary.service.js'
+const COUCHES_LIMIT = 10
 
 // Create User
 export const createUser = asyncHandler(async (req, res, next) => {
@@ -136,12 +137,20 @@ export const addUserCouch = asyncHandler(async (req, res) => {
    const user = req.user
    const { _id } = user
    const email = req.body.email
+   const numberOfCouches = user?.couches?.length
 
    if (!user) {
       throwError(500, `Server Error: Improper use of get user's info function`)
    }
    if (!email) {
       throwError(400, `You need the the couch's email`)
+   }
+   console.log('show', numberOfCouches)
+   if (numberOfCouches >= COUCHES_LIMIT) {
+      throwError(
+         400,
+         `Sorry, the limit of couches is ${COUCHES_LIMIT}, the number of couches you have is ${numberOfCouches}`
+      )
    }
 
    const newCouch = await User.findOne({ email })
