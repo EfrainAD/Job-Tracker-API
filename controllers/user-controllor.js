@@ -183,6 +183,58 @@ export const addUserCouch = asyncHandler(async (req, res) => {
    }
 })
 
+// Remove User's Couch
+export const removeUserCouch = asyncHandler(async (req, res) => {
+   const user = req.user
+   const { _id } = user
+   const email = req.body.email
+
+   if (!user) {
+      throwError(500, `Server Error: Improper use of get user's info function`)
+   }
+   if (!email) {
+      throwError(400, `You need the the couch's email`)
+   }
+
+   const newCouch = await User.findOne({ email })
+
+   if (!checkIfUserExists(newCouch))
+      throwError(400, `Couch not found, double check the email provided`)
+
+   // Start Transaction
+   const session = await mongoose.startSession()
+   session.startTransaction()
+
+   try {
+      // Update the requesting user's couch field
+      const usersCouches = await User.findOneAndUpdate(
+         { _id },
+         { $pull: { couches: newCouch._id } },
+         { session, new: true }
+      )
+         .select('-_id couches')
+         .populate({ path: 'couches', select: 'name' })
+
+      // Update the couch's field for the user being added as a person being couched
+      await User.updateOne(
+         { _id: newCouch._id, 'couching.couchee': _id },
+         { $pull: { couching: { couchee: _id } } },
+         { session }
+      )
+
+      await session.commitTransaction()
+      session.endSession()
+
+      res.json({
+         usersCouches: usersCouches.couches,
+      })
+   } catch (error) {
+      await session.abortTransaction()
+      session.endSession()
+      throwError(500, `Transaction aborted: ${error}`)
+   }
+})
+
 // Update User's Profile Picture
 export const updateUserPicture = asyncHandler(async (req, res) => {
    const { _id } = req.user
