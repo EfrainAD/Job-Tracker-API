@@ -244,6 +244,27 @@ export const removeUserCouch = asyncHandler(async (req, res) => {
    }
 })
 
+// Change if couchee the person couching is active
+export const updateUserCouchee = asyncHandler(async (req, res) => {
+   const user = req.user
+   const { _id } = user
+   const { coucheeId, active } = req.body
+
+   if (!user) {
+      throwError(500, `Server Error: Improper use of get user's info function`)
+   }
+   if (!coucheeId || typeof active !== 'boolean') {
+      throwError(400, `You need the the couchee's id and new status`)
+   }
+
+   const updatedUser = await User.findOneAndUpdate(
+      { _id, 'couching.couchee': coucheeId },
+      { $set: { 'couching.$.active': active } },
+      { new: true }
+   )
+   res.json({ user: updatedUser })
+})
+
 // Update User's Profile Picture
 export const updateUserPicture = asyncHandler(async (req, res) => {
    const { _id } = req.user

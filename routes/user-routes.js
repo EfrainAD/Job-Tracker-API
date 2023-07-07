@@ -16,6 +16,7 @@ import {
    updateUserPicture,
    verifyEmail,
    removeUserCouch,
+   updateUserCouchee,
 } from '../controllers/user-controllor.js'
 import requireUserAuth from '../middleware/auth-middleware.js'
 import upload from '../middleware/fileUploader.js'
@@ -33,8 +34,10 @@ router.post(
    upload.single('image'),
    updateUserPicture
 )
+// All things couch
 router.post('/addUserCouch', requireUserAuth, addUserCouch)
 router.post('/removeUserCouch', requireUserAuth, removeUserCouch)
+router.post('/UpdateUserCouchee', requireUserAuth, updateUserCouchee)
 // Passwords
 router.patch('/changepassword', requireUserAuth, updatePassword)
 router.post('/forgotpassword', requestPasswordReset)
