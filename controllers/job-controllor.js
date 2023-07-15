@@ -11,7 +11,7 @@ export const createJob = asyncHandler(async (req, res, next) => {
    if (!isCreateJobFormValidated(body))
       throwError(400, 'Missing one or more required fields')
 
-   const newJob = { ...body, user: userId }
+   const newJob = { ...body, owner: userId }
 
    const job = await Job.create(newJob)
 
@@ -22,7 +22,7 @@ export const createJob = asyncHandler(async (req, res, next) => {
 export const getJobs = asyncHandler(async (req, res) => {
    const userId = req.user._id
 
-   const jobs = await Job.find({ user: userId })
+   const jobs = await Job.find({ owner: userId })
       .select(
          'companyName jobTitle remote recruiter dateApplied rejectionDate firstInterviewDate technicalChallengeInterviewDate secondInterviewDate'
       )
@@ -36,7 +36,7 @@ export const getJob = asyncHandler(async (req, res) => {
    const userId = req.user._id
    const jobId = req.params.id
 
-   const job = await Job.findOne({ user: userId, _id: jobId }).populate(
+   const job = await Job.findOne({ owner: userId, _id: jobId }).populate(
       'recruiter'
    )
 
@@ -56,7 +56,7 @@ export const updateJob = asyncHandler(async (req, res) => {
    const jobId = req.params.id
    const body = req.body
 
-   const updatedBody = { ...body, user: userId }
+   const updatedBody = { ...body, owner: userId }
 
    // Add recruiter
    if (updatedBody.recruiter) {
@@ -67,7 +67,7 @@ export const updateJob = asyncHandler(async (req, res) => {
    }
 
    const updatedJob = await Job.findOneAndUpdate(
-      { _id: jobId, user: userId },
+      { _id: jobId, owner: userId },
       updatedBody,
       { new: true, runValidators: true }
    ).populate('recruiter', 'name')
@@ -93,7 +93,7 @@ export const removeRecruiterFromJob = asyncHandler(async (req, res) => {
    }
 
    const updatedJob = await Job.findOneAndUpdate(
-      { _id: jobId, user: userId },
+      { _id: jobId, owner: userId },
       { $pull: { recruiter } },
       { new: true, runValidators: true }
    ).populate('recruiter', 'name')
@@ -113,7 +113,7 @@ export const deleteJob = asyncHandler(async (req, res) => {
    const userId = req.user._id
    const productId = req.params.id
 
-   const job = await Job.findOneAndDelete({ user: userId, _id: productId })
+   const job = await Job.findOneAndDelete({ owner: userId, _id: productId })
 
    if (job === null)
       throwError(
