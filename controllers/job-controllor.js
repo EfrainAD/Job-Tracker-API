@@ -81,6 +81,32 @@ export const updateJob = asyncHandler(async (req, res) => {
    res.status(200).json(updatedJob)
 })
 
+// Remove recruiter from Job
+export const removeRecruiterFromJob = asyncHandler(async (req, res) => {
+   const userId = req.user._id
+   const jobId = req.params.id
+   const { recruiter } = req.body
+
+   if (!recruiter) {
+      throwError(400, 'Recruiter to remove is required')
+   }
+
+   const updatedJob = await Job.findOneAndUpdate(
+      { _id: jobId, user: userId },
+      { $pull: { recruiter } },
+      { new: true, runValidators: true }
+   ).populate('recruiter', 'name')
+
+   if (!updatedJob) {
+      throwError(
+         404,
+         'Job not found, job does not exist or user does not have access.'
+      )
+   }
+
+   res.status(200).json(updatedJob)
+})
+
 // DELETE - Job
 export const deleteJob = asyncHandler(async (req, res) => {
    const userId = req.user._id
