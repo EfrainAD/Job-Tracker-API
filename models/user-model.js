@@ -1,6 +1,9 @@
 import mongoose from 'mongoose'
 import bcrypt from 'bcryptjs'
-import { COUCHES_LIMIT } from '../utils/variables/globalVariables.js'
+import {
+   COUCHES_LIMIT,
+   MAX_PASSWORD_LENGTH,
+} from '../utils/variables/globalVariables.js'
 
 const userSchema = mongoose.Schema(
    {
@@ -94,6 +97,13 @@ userSchema.pre('findOneAndUpdate', async function (next) {
 
    if (!update.password || typeof update.password !== 'string') {
       return next()
+   }
+
+   if (update.password.length > MAX_PASSWORD_LENGTH) {
+      const err = new Error(
+         `Password is too long, password can't be longer then ${MAX_PASSWORD_LENGTH} char.`
+      )
+      return next(err)
    }
 
    try {

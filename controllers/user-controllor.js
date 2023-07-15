@@ -28,7 +28,11 @@ import {
    signImgCredentials,
    uploadImage,
 } from '../services/cloudinary/cloudinary.service.js'
-import { COUCHES_LIMIT } from '../utils/variables/globalVariables.js'
+import {
+   COUCHES_LIMIT,
+   MAX_PASSWORD_LENGTH,
+   MIN_PASSWORD_LENGTH,
+} from '../utils/variables/globalVariables.js'
 
 // Create User
 export const createUser = asyncHandler(async (req, res, next) => {
@@ -298,9 +302,15 @@ export const updatePassword = asyncHandler(async (req, res) => {
    if (!isChangePasswordFormFilled(old_password, new_password))
       throwError(400, 'You are missing fields')
    if (isPasswordTooShort(new_password))
-      throwError(400, 'Password must be at least 8 characters long')
+      throwError(
+         400,
+         `Password must be at least ${MIN_PASSWORD_LENGTH} characters long`
+      )
    if (isPasswordTooLong(new_password))
-      throwError(400, 'Password must be shorter then 23 characters long')
+      throwError(
+         400,
+         `Password must be shorter then ${MAX_PASSWORD_LENGTH} characters long`
+      )
 
    if (!(await isPasswordCorrect(user, old_password))) {
       throwError(401, 'Wrong password')

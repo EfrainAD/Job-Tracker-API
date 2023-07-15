@@ -4,6 +4,10 @@ import jwt from 'jsonwebtoken'
 import Token from '../../models/token-model.js'
 import User from '../../models/user-model.js'
 import { throwError } from '../errorHandler/errorHandler-utils.js'
+import {
+   MAX_PASSWORD_LENGTH,
+   MIN_PASSWORD_LENGTH,
+} from '../variables/globalVariables.js'
 const EXPIRES_IN_MINUTES = process.env.EXPIRES_IN_MINUTES
 
 export const createToken = (id) => {
@@ -59,9 +63,11 @@ export const isChangePasswordFormFilled = (old_password, new_password) => {
    }
    return true
 }
-export const isPasswordTooShort = (password) => password.length < 8
+export const isPasswordTooShort = (password) =>
+   password.length < MIN_PASSWORD_LENGTH
 
-export const isPasswordTooLong = (password) => password.length >= 23
+export const isPasswordTooLong = (password) =>
+   password.length >= MAX_PASSWORD_LENGTH
 
 export const checkIfUserExists = (user) => {
    if (!user) {
