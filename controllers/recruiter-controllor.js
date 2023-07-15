@@ -11,7 +11,7 @@ export const createRecruiter = asyncHandler(async (req, res, next) => {
    if (!isCreateRecruiterFormValidated(body))
       throwError(400, 'Missing one or more required fields')
 
-   const newRecruiter = { ...body, user: userId }
+   const newRecruiter = { ...body, owner: userId }
 
    const recruiter = await Recruiter.create(newRecruiter)
 
@@ -22,7 +22,7 @@ export const createRecruiter = asyncHandler(async (req, res, next) => {
 export const getRecruiters = asyncHandler(async (req, res) => {
    const userId = req.user._id
 
-   const recruiters = await Recruiter.find({ user: userId })
+   const recruiters = await Recruiter.find({ owner: userId })
 
    res.status(200).json(recruiters)
 })
@@ -32,7 +32,10 @@ export const getRecruiter = asyncHandler(async (req, res) => {
    const userId = req.user._id
    const recruiterId = req.params.id
 
-   const recruiter = await Recruiter.findOne({ user: userId, _id: recruiterId })
+   const recruiter = await Recruiter.findOne({
+      owner: userId,
+      _id: recruiterId,
+   })
 
    if (!recruiter) {
       throwError(
@@ -50,10 +53,10 @@ export const updateRecruiter = asyncHandler(async (req, res) => {
    const recruiterId = req.params.id
    const body = req.body
 
-   const updatedBody = { ...body, user: userId }
+   const updatedBody = { ...body, owner: userId }
 
    const updatedRecruiter = await Recruiter.findOneAndUpdate(
-      { _id: recruiterId, user: userId },
+      { _id: recruiterId, owner: userId },
       updatedBody,
       { new: true, runValidators: true }
    )
@@ -74,7 +77,7 @@ export const deleteRecruiter = asyncHandler(async (req, res) => {
    const productId = req.params.id
 
    const recruiter = await Recruiter.findOneAndDelete({
-      user: userId,
+      owner: userId,
       _id: productId,
    })
 
