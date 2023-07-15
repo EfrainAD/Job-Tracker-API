@@ -39,14 +39,14 @@ router.post('/addUserCouch', requireUserAuth, addUserCouch)
 router.post('/removeUserCouch', requireUserAuth, removeUserCouch)
 router.post('/UpdateUserCouchee', requireUserAuth, updateUserCouchee)
 // Passwords
-router.patch('/changepassword', requireUserAuth, updatePassword)
-router.post('/forgotpassword', requestPasswordReset)
-router.put('/resetpassword/:resetToken', resetPassword)
+router.patch('/changePassword', requireUserAuth, updatePassword)
+router.post('/forgotPassword', requestPasswordReset)
+router.put('/resetPassword/:resetToken', resetPassword)
 // email verification
-router.post('/requestemailverification', requestEmailVerification)
-router.put('/verifyemail/:resetToken', verifyEmail)
+router.post('/requesteMailVerification', requestEmailVerification)
+router.put('/verifyEmail/:resetToken', verifyEmail)
 // Cloudinary Signiture
-router.get('/imagecredentials', requireUserAuth, signImageUploadCredentials)
+router.get('/imageCredentials', requireUserAuth, signImageUploadCredentials)
 
 router.get('/', getUsers)
 

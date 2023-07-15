@@ -22,10 +22,11 @@ export const createJob = asyncHandler(async (req, res, next) => {
 export const getJobs = asyncHandler(async (req, res) => {
    const userId = req.user._id
 
-   const jobs = await Job.find({ user: userId }).select(
-      'companyName jobTitle remote recruiter dateApplied rejectionDate firstInterviewDate technicalChallengeInterviewDate secondInterviewDate'
-   )
-   // .populate('recruiter', '_id name')
+   const jobs = await Job.find({ user: userId })
+      .select(
+         'companyName jobTitle remote recruiter dateApplied rejectionDate firstInterviewDate technicalChallengeInterviewDate secondInterviewDate'
+      )
+      .populate('recruiter', '_id name')
 
    res.status(200).json(jobs)
 })
@@ -55,13 +56,20 @@ export const updateJob = asyncHandler(async (req, res) => {
    const body = req.body
 
    const updatedBody = { ...body, user: userId }
-   // recruiter: Stuff will need to be here.
+
+   // Add recruiter
+   if (updatedBody.recruiter) {
+      updatedBody.$addToSet = {
+         recruiter: updatedBody.recruiter,
+      }
+      delete updatedBody.recruiter
+   }
 
    const updatedJob = await Job.findOneAndUpdate(
       { _id: jobId, user: userId },
       updatedBody,
       { new: true, runValidators: true }
-   )
+   ).populate('recruiter', 'name')
 
    if (!updatedJob) {
       throwError(
@@ -91,6 +99,6 @@ export const deleteJob = asyncHandler(async (req, res) => {
 
 // Get All Jobs
 export const getALLJobs = asyncHandler(async (req, res) => {
-   const job = await Job.find({})
+   const job = await Job.find({}).populate('user', 'name, email')
    res.status(201).json(job)
 })

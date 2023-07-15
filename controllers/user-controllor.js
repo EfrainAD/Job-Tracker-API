@@ -120,8 +120,6 @@ export const updateUser = asyncHandler(async (req, res) => {
       throwError(500, `Server Error: Improper use of get user's info function`)
    }
 
-   // ToDo: If users has couchs or couching send an error.
-
    const newUserObj = createNewUserObj(user, body)
 
    const updatedUser = await User.findOneAndUpdate({ _id }, newUserObj, {
