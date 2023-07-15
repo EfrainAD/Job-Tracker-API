@@ -26,7 +26,7 @@ export const getJobs = asyncHandler(async (req, res) => {
       .select(
          'companyName jobTitle remote recruiter dateApplied rejectionDate firstInterviewDate technicalChallengeInterviewDate secondInterviewDate'
       )
-      .populate('recruiter', '_id name')
+      .populate('recruiter')
 
    res.status(200).json(jobs)
 })
@@ -36,8 +36,9 @@ export const getJob = asyncHandler(async (req, res) => {
    const userId = req.user._id
    const jobId = req.params.id
 
-   const job = await Job.findOne({ user: userId, _id: jobId })
-   // .populate('recruiter', '_id name')
+   const job = await Job.findOne({ user: userId, _id: jobId }).populate(
+      'recruiter'
+   )
 
    if (!job) {
       throwError(

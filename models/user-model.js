@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import bcrypt from 'bcryptjs'
+import { COUCHES_LIMIT } from '../utils/variables/globalVariables.js'
 
 const userSchema = mongoose.Schema(
    {
@@ -105,7 +106,20 @@ userSchema.pre('findOneAndUpdate', async function (next) {
       return next(error)
    }
 })
+userSchema.pre('findOneAndUpdate', async function (next) {
+   const update = this.getUpdate()
+   if (update.$addToSet?.couches) {
+      const { couches } = await this.model.findOne(this.getQuery())
 
+      if (couches.length >= COUCHES_LIMIT) {
+         const err = new Error(
+            `Maximum number of couches can't exceed ${COUCHES_LIMIT}.`
+         )
+         return next(err)
+      }
+   }
+   next()
+})
 // userSchema.pre('save', async function (next) {
 //    try {
 //       console.log('hi pass')

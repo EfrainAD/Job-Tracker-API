@@ -28,7 +28,7 @@ import {
    signImgCredentials,
    uploadImage,
 } from '../services/cloudinary/cloudinary.service.js'
-const COUCHES_LIMIT = 10
+import { COUCHES_LIMIT } from '../utils/variables/globalVariables.js'
 
 // Create User
 export const createUser = asyncHandler(async (req, res, next) => {
@@ -143,7 +143,7 @@ export const addUserCouch = asyncHandler(async (req, res) => {
    if (!email) {
       throwError(400, `You need the the couch's email`)
    }
-   console.log('show', numberOfCouches)
+
    if (numberOfCouches >= COUCHES_LIMIT) {
       throwError(
          400,
