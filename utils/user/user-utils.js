@@ -14,14 +14,14 @@ export const createToken = (id) => {
    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1d' })
 }
 export const clearPasswordResetToken = async (userId) =>
-   await Token.findOneAndDelete({ userId: userId })
+   await Token.findOneAndDelete({ owner: userId })
 export const savePasswordResetToken = async (
    userId,
    hashedToken,
    expiresInMernuts = EXPIRES_IN_MINUTES
 ) =>
    await Token.create({
-      userId: userId,
+      owner: userId,
       token: hashedToken,
       createdAt: Date.now(),
       expiresAt: Date.now() + expiresInMernuts * (60 * 1000), // convert minutes to milliseconds
@@ -34,7 +34,7 @@ export const getUserFromHashedResetToken = async (hashedToken) => {
    if (!userToken) throw new Error('Token not found, or expired')
 
    // Get User from Token's owner
-   const user = await User.findOne({ _id: userToken.userId })
+   const user = await User.findOne({ _id: userToken.owner })
    if (!user) throw new Error('Error when retreaving user')
 
    return user
