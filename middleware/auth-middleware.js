@@ -1,6 +1,6 @@
 import asyncHandler from 'express-async-handler'
 import User from '../models/user-model.js'
-import { getUserIdFromToken } from '../utils/user/user-utils.js'
+import { getUserIdFromToken } from '../utils/token/token-utils.js'
 import { throwError } from '../utils/errorHandler/errorHandler-utils.js'
 
 const requireUserAuth = asyncHandler(async (req, res, next) => {

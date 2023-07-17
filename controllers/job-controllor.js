@@ -1,7 +1,7 @@
 import Job from '../models/job-model.js'
 import asyncHandler from 'express-async-handler'
 import { throwError } from '../utils/errorHandler/errorHandler-utils.js'
-import { isCreateJobFormValidated } from '../utils/user/job-utils.js'
+import { isCreateJobFormValidated } from '../utils/Job/job-utils.js'
 
 // Create Job
 export const createJob = asyncHandler(async (req, res, next) => {

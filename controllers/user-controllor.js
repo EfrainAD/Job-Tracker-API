@@ -2,7 +2,6 @@ import User from '../models/user-model.js'
 import mongoose from 'mongoose'
 import asyncHandler from 'express-async-handler'
 import {
-   createToken,
    isRegistorFormValidated,
    checkIfUserExists,
    createNewUserObj,
@@ -11,12 +10,15 @@ import {
    isPasswordTooShort,
    isPasswordTooLong,
    isChangePasswordFormFilled,
-   clearPasswordResetToken,
-   createPasswordResetToken,
-   createHashedToken,
-   savePasswordResetToken,
-   getUserFromHashedResetToken,
 } from '../utils/user/user-utils.js'
+import {
+   createToken,
+   createPasswordResetToken,
+   clearPasswordResetToken,
+   createHashedToken,
+   getUserFromHashedResetToken,
+   savePasswordResetToken,
+} from '../utils/token/token-utils.js'
 import { throwError } from '../utils/errorHandler/errorHandler-utils.js'
 import {
    isValidEmail,
