@@ -17,6 +17,7 @@ import {
    verifyEmail,
    removeUserCouch,
    updateUserCouchee,
+   getAllCouches,
 } from '../controllers/user-controllor.js'
 import requireUserAuth from '../middleware/auth-middleware.js'
 import upload from '../middleware/fileUploader.js'
@@ -49,5 +50,6 @@ router.put('/verifyEmail/:resetToken', verifyEmail)
 router.get('/imageCredentials', requireUserAuth, signImageUploadCredentials)
 
 router.get('/', getUsers)
+router.get('/couches', getAllCouches)
 
 export default router

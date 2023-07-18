@@ -35,6 +35,7 @@ import {
    MAX_PASSWORD_LENGTH,
    MIN_PASSWORD_LENGTH,
 } from '../utils/variables/globalVariables.js'
+import Couch from '../models/couch-model.js'
 
 // Create User
 export const createUser = asyncHandler(async (req, res, next) => {
@@ -174,14 +175,17 @@ export const addUserCouch = asyncHandler(async (req, res) => {
          { session, new: true }
       )
          .select('-_id couches')
-         .populate({ path: 'couches', select: 'name' })
+         .populate('couches', 'name')
 
       // Update the couch's field for the user being added as a person being couched
-      await User.updateOne(
-         { _id: newCouch._id, 'couching.couchee': { $ne: _id } },
-         { $push: { couching: { couchee: _id, active: false } } },
-         { session }
-      )
+      const search = await Couch.find({ couch: newCouch._id, couchee: _id })
+      if (search.length === 0) {
+         await Couch.create({
+            couch: newCouch._id,
+            couchee: _id,
+            active: false,
+         })
+      }
 
       await session.commitTransaction()
       session.endSession()
@@ -209,9 +213,9 @@ export const removeUserCouch = asyncHandler(async (req, res) => {
       throwError(400, `You need the the couch's email`)
    }
 
-   const newCouch = await User.findOne({ email })
+   const couch = await User.findOne({ email })
 
-   if (!checkIfUserExists(newCouch))
+   if (!checkIfUserExists(couch))
       throwError(400, `Couch not found, double check the email provided`)
 
    // Start Transaction
@@ -222,18 +226,14 @@ export const removeUserCouch = asyncHandler(async (req, res) => {
       // Update the requesting user's couch field
       const usersCouches = await User.findOneAndUpdate(
          { _id },
-         { $pull: { couches: newCouch._id } },
+         { $pull: { couches: couch._id } },
          { session, new: true }
       )
          .select('-_id couches')
          .populate({ path: 'couches', select: 'name' })
 
       // Update the couch's field for the user being added as a person being couched
-      await User.updateOne(
-         { _id: newCouch._id, 'couching.couchee': _id },
-         { $pull: { couching: { couchee: _id } } },
-         { session }
-      )
+      await Couch.findOneAndDelete({ couch: couch, couchee: _id })
 
       await session.commitTransaction()
       session.endSession()
@@ -261,12 +261,22 @@ export const updateUserCouchee = asyncHandler(async (req, res) => {
       throwError(400, `You need the the couchee's id and new status`)
    }
 
-   const updatedUser = await User.findOneAndUpdate(
-      { _id, 'couching.couchee': coucheeId },
-      { $set: { 'couching.$.active': active } },
+   // const update = await Couch.findOneAndUpdate(
+   const update = await Couch.findOneAndUpdate(
+      { couch: _id, couchee: coucheeId },
+      { active },
       { new: true }
    )
-   res.json({ user: updatedUser })
+
+   res.json({ couchee: update })
+})
+
+// ADMIN Find all couch documents
+export const getAllCouches = asyncHandler(async (req, res) => {
+   const couches = await Couch.find({})
+      .populate('couch', 'name email')
+      .populate('couchee', 'name email')
+   res.status(201).json(couches)
 })
 
 // Update User's Profile Picture

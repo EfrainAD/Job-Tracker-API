@@ -53,18 +53,6 @@ const userSchema = mongoose.Schema(
             ref: 'User',
          },
       ],
-      couching: [
-         {
-            couchee: {
-               type: mongoose.Schema.Types.ObjectId,
-               ref: 'Couch',
-            },
-            active: {
-               type: Boolean,
-               default: false,
-            },
-         },
-      ],
    },
    {
       toJSON: {
