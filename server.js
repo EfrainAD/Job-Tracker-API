@@ -6,6 +6,7 @@ import mongoose from 'mongoose'
 import jobRoutes from './routes/job-routes.js'
 import userRoutes from './routes/user-routes.js'
 import recruiterRoutes from './routes/recruiter-routes.js'
+import couchRoutes from './routes/couch-routes.js'
 
 // Middleware Imports
 import cors from 'cors'
@@ -36,6 +37,7 @@ app.use(
 app.use('/api/jobs', jobRoutes)
 app.use('/api/users', userRoutes)
 app.use('/api/recruiters', recruiterRoutes)
+app.use('/api/couch', couchRoutes)
 
 app.get('/', (req, res) => {
    res.send(
