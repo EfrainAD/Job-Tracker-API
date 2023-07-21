@@ -11,13 +11,13 @@ import {
    isChangePasswordFormFilled,
 } from '../utils/user/user-utils.js'
 import {
-   createToken,
    createPasswordResetToken,
    clearPasswordResetToken,
    createHashedToken,
    getUserFromHashedResetToken,
    savePasswordResetToken,
-} from '../utils/token/token-utils.js'
+} from '../utils/token/stored-token-utils.js'
+import { createToken } from '../utils/token/session-token-utils.js'
 import { throwError } from '../utils/errorHandler/errorHandler-utils.js'
 import {
    isValidEmail,
