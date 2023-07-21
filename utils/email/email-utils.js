@@ -1,4 +1,5 @@
 import { throwError } from '../errorHandler/errorHandler-utils.js'
+import { EXPIRES_IN_MINUTES } from '../variables/globalVariables.js'
 import sendEmail from './emailSender.js'
 
 export const isValidEmail = (email) => {
@@ -11,7 +12,7 @@ export const sendPasswordResetEmail = async (user, resetToken) => {
    const resetUrl = `${
       process.env.FRONT_PAGE_URL || 'http://127.0.0.1:3000'
    }/resetpassword/${resetToken}`
-   const minutesEmailExpires = process.env.EXPIRES_IN_MINUTES
+   const minutesEmailExpires = EXPIRES_IN_MINUTES
    const subject = 'Reset Password Request'
    const send_to = user.email
    const sent_from = process.env.EMAIL_USER
@@ -45,7 +46,7 @@ export const sendEmailVerificationEmail = async (user, resetToken) => {
    const resetUrl = `${
       process.env.FRONT_PAGE_URL || 'http://127.0.0.1:3000'
    }/verifyemail/${resetToken}`
-   const minutesEmailExpires = process.env.EXPIRES_IN_MINUTES
+   const minutesEmailExpires = EXPIRES_IN_MINUTES
    const subject = 'Verify Email'
    const send_to = user.email
    const sent_from = process.env.EMAIL_USER

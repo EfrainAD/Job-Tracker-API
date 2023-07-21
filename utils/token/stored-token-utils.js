@@ -1,6 +1,6 @@
 import Token from '../../models/token-model.js'
 import User from '../../models/user-model.js'
-const EXPIRES_IN_MINUTES = process.env.EXPIRES_IN_MINUTES
+import { EXPIRES_IN_MINUTES } from '../variables/globalVariables.js'
 
 export const clearPasswordResetToken = async (userId) =>
    await Token.findOneAndDelete({ owner: userId })
