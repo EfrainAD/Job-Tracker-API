@@ -202,7 +202,7 @@ export const requestPasswordReset = asyncHandler(async (req, res) => {
    const user = await User.findOne({ email: email })
    if (!user) throwError(400, `User does not exist by that email`)
 
-   // If user has any
+   // If user has any unused or expired tokens
    deleteStoredToken(user._id)
 
    // Create & Encrypt Token
@@ -212,8 +212,10 @@ export const requestPasswordReset = asyncHandler(async (req, res) => {
    saveStoredToken(user._id, hashedToken)
 
    const response = await sendPasswordResetEmail(user, resetToken)
+   // console.log('stored token:', resetToken)
 
    res.status(200).json(response)
+   // res.status(200).json(resetToken)
 })
 
 // User Reset their Password from Email Token.
@@ -236,7 +238,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
 
    await User.findOneAndUpdate(
       { _id: user._id },
-      { password: new_password },
+      { password: new_password, emailConfirmed: true },
       { new: true, runValidators: true }
    )
 
@@ -258,7 +260,7 @@ export const requestEmailVerification = asyncHandler(async (req, res) => {
    const user = await User.findOne({ email: email })
    if (!user) throwError(400, `User does not exist by that email`)
 
-   // If user has any
+   // If user has any from former unused stored token
    deleteStoredToken(user._id)
 
    // Create & Encrypt Token
@@ -274,11 +276,11 @@ export const requestEmailVerification = asyncHandler(async (req, res) => {
 
 // Verify the user's email
 export const verifyEmail = asyncHandler(async (req, res) => {
-   const { resetToken } = req.params
-   const hashedToken = createHashedToken(resetToken)
+   const { verificationToken } = req.params
+   const hashedToken = createHashedToken(verificationToken)
 
    // Validation
-   if (!resetToken) throwError(404, 'Bad link')
+   if (!verificationToken) throwError(404, 'Bad link')
 
    // Get a validated user's token from DB
    let user

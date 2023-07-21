@@ -37,7 +37,7 @@ router.post('/forgotPassword', requestPasswordReset)
 router.put('/resetPassword/:resetToken', resetPassword)
 // email verification
 router.post('/requesteMailVerification', requestEmailVerification)
-router.put('/verifyEmail/:resetToken', verifyEmail)
+router.put('/verifyEmail/:verificationToken', verifyEmail)
 // Cloudinary Signiture
 router.get('/imageCredentials', requireUserAuth, signImageUploadCredentials)
 

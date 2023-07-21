@@ -1,3 +1,4 @@
+import crypto from 'crypto'
 import Token from '../../models/token-model.js'
 import User from '../../models/user-model.js'
 import { EXPIRES_IN_MINUTES } from '../variables/globalVariables.js'
