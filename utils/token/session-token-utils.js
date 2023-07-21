@@ -9,6 +9,6 @@ export const getUserIdFromToken = (token) => {
    return id
 }
 
-export const createToken = (id) => {
+export const createSessionToken = (id) => {
    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1d' })
 }

@@ -11,13 +11,13 @@ import {
    isChangePasswordFormFilled,
 } from '../utils/user/user-utils.js'
 import {
-   createPasswordResetToken,
-   clearPasswordResetToken,
+   createStoredToken,
+   deleteStoredToken,
    createHashedToken,
-   getUserFromHashedResetToken,
-   savePasswordResetToken,
+   getUserFromHashedStoredToken,
+   saveStoredToken,
 } from '../utils/token/stored-token-utils.js'
-import { createToken } from '../utils/token/session-token-utils.js'
+import { createSessionToken } from '../utils/token/session-token-utils.js'
 import { throwError } from '../utils/errorHandler/errorHandler-utils.js'
 import {
    isValidEmail,
@@ -61,7 +61,7 @@ export const signInUser = asyncHandler(async (req, res) => {
    const { _id, name, photo, phone, bio } = user
 
    // Create cookie
-   const token = createToken(_id)
+   const token = createSessionToken(_id)
    res.cookie('token', token, {
       path: '/',
       httpOnly: true,
@@ -203,13 +203,13 @@ export const requestPasswordReset = asyncHandler(async (req, res) => {
    if (!user) throwError(400, `User does not exist by that email`)
 
    // If user has any
-   clearPasswordResetToken(user._id)
+   deleteStoredToken(user._id)
 
    // Create & Encrypt Token
-   const resetToken = await createPasswordResetToken(user._id)
+   const resetToken = await createStoredToken(user._id)
    const hashedToken = createHashedToken(resetToken)
 
-   savePasswordResetToken(user._id, hashedToken)
+   saveStoredToken(user._id, hashedToken)
 
    const response = await sendPasswordResetEmail(user, resetToken)
 
@@ -229,7 +229,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
    // Get a validated user's token from DB
    let user
    try {
-      user = await getUserFromHashedResetToken(hashedToken)
+      user = await getUserFromHashedStoredToken(hashedToken)
    } catch (error) {
       throwError(404, error)
    }
@@ -240,7 +240,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
       { new: true, runValidators: true }
    )
 
-   clearPasswordResetToken(user._id)
+   deleteStoredToken(user._id)
 
    res.status(200).json({
       success: true,
@@ -259,13 +259,13 @@ export const requestEmailVerification = asyncHandler(async (req, res) => {
    if (!user) throwError(400, `User does not exist by that email`)
 
    // If user has any
-   clearPasswordResetToken(user._id)
+   deleteStoredToken(user._id)
 
    // Create & Encrypt Token
-   const resetToken = await createPasswordResetToken(user._id)
+   const resetToken = await createStoredToken(user._id)
    const hashedToken = createHashedToken(resetToken)
 
-   savePasswordResetToken(user._id, hashedToken)
+   saveStoredToken(user._id, hashedToken)
 
    const response = await sendEmailVerificationEmail(user, resetToken)
 
@@ -283,7 +283,7 @@ export const verifyEmail = asyncHandler(async (req, res) => {
    // Get a validated user's token from DB
    let user
    try {
-      user = await getUserFromHashedResetToken(hashedToken)
+      user = await getUserFromHashedStoredToken(hashedToken)
    } catch (error) {
       throwError(404, error)
    }
@@ -294,7 +294,7 @@ export const verifyEmail = asyncHandler(async (req, res) => {
       { new: true, runValidators: true }
    )
 
-   clearPasswordResetToken(user._id)
+   deleteStoredToken(user._id)
 
    res.status(200).json({
       success: true,

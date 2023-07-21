@@ -2,10 +2,12 @@ import Token from '../../models/token-model.js'
 import User from '../../models/user-model.js'
 import { EXPIRES_IN_MINUTES } from '../variables/globalVariables.js'
 
-export const clearPasswordResetToken = async (userId) =>
+// Stored tokens are used for both reset password, and email validate
+
+export const deleteStoredToken = async (userId) =>
    await Token.findOneAndDelete({ owner: userId })
 
-export const savePasswordResetToken = async (
+export const saveStoredToken = async (
    userId,
    hashedToken,
    expiresInMernuts = EXPIRES_IN_MINUTES
@@ -17,7 +19,7 @@ export const savePasswordResetToken = async (
       expiresAt: Date.now() + expiresInMernuts * (60 * 1000), // convert minutes to milliseconds
    })
 
-export const getUserFromHashedResetToken = async (hashedToken) => {
+export const getUserFromHashedStoredToken = async (hashedToken) => {
    const userToken = await Token.findOne({
       token: hashedToken,
       expiresAt: { $gt: Date.now() },
@@ -31,7 +33,7 @@ export const getUserFromHashedResetToken = async (hashedToken) => {
    return user
 }
 
-export const createPasswordResetToken = async (userId) =>
+export const createStoredToken = async (userId) =>
    crypto.randomBytes(32).toString('hex') + userId
 
 export const createHashedToken = (token) =>
