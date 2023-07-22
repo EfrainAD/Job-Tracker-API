@@ -45,7 +45,7 @@ export const addUserCouch = asyncHandler(async (req, res) => {
          { session, new: true }
       )
          .select('-_id couches')
-         .populate('couches', 'name')
+         .populate({ path: 'couches', select: 'name' })
 
       // Update the couch's field for the user being added as a person being couched
       const search = await Couch.find({ couch: newCouch._id, couchee: _id })
@@ -148,7 +148,7 @@ export const updateUserCouchee = asyncHandler(async (req, res) => {
 // ADMIN Find all couch documents // To Be removed
 export const getAllCouches = asyncHandler(async (req, res) => {
    const couches = await Couch.find({})
-      .populate('couch', 'name email')
-      .populate('couchee', 'name email')
+      .populate({ path: 'couch', select: 'name email' })
+      .populate({ path: 'couchee', select: 'name email' })
    res.status(201).json(couches)
 })

@@ -26,7 +26,7 @@ export const getJobs = asyncHandler(async (req, res) => {
       .select(
          'companyName jobTitle remote recruiter dateApplied rejectionDate firstInterviewDate technicalChallengeInterviewDate secondInterviewDate'
       )
-      .populate('recruiter')
+      .populate({ path: 'recruiter' })
 
    res.status(200).json(jobs)
 })
@@ -36,9 +36,9 @@ export const getJob = asyncHandler(async (req, res) => {
    const userId = req.user._id
    const jobId = req.params.id
 
-   const job = await Job.findOne({ owner: userId, _id: jobId }).populate(
-      'recruiter'
-   )
+   const job = await Job.findOne({ owner: userId, _id: jobId }).populate({
+      path: 'recruiter',
+   })
 
    if (!job) {
       throwError(
@@ -70,7 +70,7 @@ export const updateJob = asyncHandler(async (req, res) => {
       { _id: jobId, owner: userId },
       updatedBody,
       { new: true, runValidators: true }
-   ).populate('recruiter', 'name')
+   ).populate({ path: 'recruiter', select: 'name' })
 
    if (!updatedJob) {
       throwError(
@@ -96,7 +96,7 @@ export const removeRecruiterFromJob = asyncHandler(async (req, res) => {
       { _id: jobId, owner: userId },
       { $pull: { recruiter } },
       { new: true, runValidators: true }
-   ).populate('recruiter', 'name')
+   ).populate({ path: 'recruiter', select: 'name' })
 
    if (!updatedJob) {
       throwError(
@@ -126,6 +126,9 @@ export const deleteJob = asyncHandler(async (req, res) => {
 
 // Get All Jobs
 export const getALLJobs = asyncHandler(async (req, res) => {
-   const job = await Job.find({}).populate('user', 'name, email')
+   const job = await Job.find({}).populate({
+      path: 'owner',
+      select: 'name email',
+   })
    res.status(201).json(job)
 })

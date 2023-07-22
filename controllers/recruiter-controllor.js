@@ -92,6 +92,10 @@ export const deleteRecruiter = asyncHandler(async (req, res) => {
 
 // Get All Recruiters REMOVED AT END OF PROJECT
 export const getALLRecruiters = asyncHandler(async (req, res) => {
-   const recruiter = await Recruiter.find({}).populate('user', 'name, email')
+   const recruiter = await Recruiter.find({}).populate({
+      path: 'owner',
+      select: 'name email',
+   })
+
    res.status(201).json(recruiter)
 })

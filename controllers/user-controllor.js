@@ -315,6 +315,9 @@ export const signImageUploadCredentials = (req, res) => {
 
 // Get All Users // TO BE REMOVED
 export const getUsers = asyncHandler(async (req, res) => {
-   const user = await User.find({}).populate('couches', 'name')
+   const user = await User.find({}).populate({
+      path: 'couches',
+      select: 'name',
+   })
    res.status(201).json(user)
 })
