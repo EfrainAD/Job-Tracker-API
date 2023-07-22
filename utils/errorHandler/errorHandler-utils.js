@@ -22,7 +22,7 @@ export const createErrorObj = (statusCode, errorMessage) => {
 }
 
 export const throwError = (statusCode = 500, errorMessage = null) => {
-   if (errorMessage === null) errorMessage = getErrorMessage(statusCode)
+   if (!errorMessage) errorMessage = getErrorMessage(statusCode)
 
    const error = createErrorObj(statusCode, errorMessage)
 
