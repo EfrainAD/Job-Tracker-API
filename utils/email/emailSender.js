@@ -23,6 +23,9 @@ const sendEmail = async (subject, message, send_to, sent_from, reply_to) => {
    }
 
    const res = await transporter.sendMail(options)
+   delete res.accepted
+   delete res.envelope
+
    console.log('transporter.sendMail response:', res)
 }
 

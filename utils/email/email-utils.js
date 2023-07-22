@@ -35,6 +35,10 @@ export const sendPasswordResetEmail = async (user, resetToken) => {
          message: 'A reset email has been sent',
       }
    } catch (error) {
+      console.log(
+         "Failed to send the email to reset the user's password, the error message returned:",
+         error
+      )
       throwError(
          500,
          `Failed to send the email to reset the user's password, the error message returned: ${error.message}`
@@ -69,6 +73,10 @@ export const sendEmailVerificationEmail = async (user, resetToken) => {
          message: 'A reset email has been sent',
       }
    } catch (error) {
+      console.log(
+         'Failed to send email to verify an account, the error message returned:',
+         error
+      )
       throwError(
          500,
          `Failed to send the email to verify your account, the error message returned: ${error.message}`
