@@ -20,9 +20,9 @@ import {
 import { createSessionToken } from '../utils/token/session-token-utils.js'
 import { throwError } from '../utils/errorHandler/errorHandler-utils.js'
 import {
+   emailActions,
    isValidEmail,
-   sendEmailVerificationEmail,
-   sendPasswordResetEmail,
+   sendEmail,
 } from '../utils/email/email-utils.js'
 const oneDayInMilliseconds = 1000 * 60 * 60 * 24 // 1 day in milliseconds
 import {
@@ -211,7 +211,11 @@ export const requestPasswordReset = asyncHandler(async (req, res) => {
 
    saveStoredToken(user._id, hashedToken)
 
-   const response = await sendPasswordResetEmail(user, resetToken)
+   const response = await sendEmail(
+      user,
+      resetToken,
+      emailActions.resetPassword
+   )
    // console.log('stored token:', resetToken)
 
    res.status(200).json(response)
@@ -269,7 +273,7 @@ export const requestEmailVerification = asyncHandler(async (req, res) => {
 
    saveStoredToken(user._id, hashedToken)
 
-   const response = await sendEmailVerificationEmail(user, resetToken)
+   const response = await sendEmail(user, resetToken, emailActions.verifyemail)
 
    res.status(200).json(response)
 })
