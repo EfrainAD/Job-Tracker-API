@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken'
+import { throwError } from '../errorHandler/errorHandler-utils.js'
 
 export const getUserIdFromToken = (token) => {
    if (!token) {
