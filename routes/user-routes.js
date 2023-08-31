@@ -21,7 +21,7 @@ import upload from '../middleware/fileUploader.js'
 //Routes
 router.post('/register', createUser)
 router.post('/signin', signInUser)
-router.get('/signout', signOutUser)
+router.delete('/signout', signOutUser)
 router.get('/getuser', requireUserAuth, getUser)
 // Updating
 router.patch('/updateuser', requireUserAuth, updateUser)
