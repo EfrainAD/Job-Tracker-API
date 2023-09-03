@@ -29,6 +29,9 @@ const jobSchema = new mongoose.Schema(
          type: String,
          trim: true,
       },
+      easyApply: {
+         type: Boolean,
+      },
       remote: {
          type: String,
          enum: ['remote', 'on-site', 'hybrid'],
