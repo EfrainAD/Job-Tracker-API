@@ -27,6 +27,7 @@ export const getJobs = asyncHandler(async (req, res) => {
          'companyName jobTitle remote recruiter dateApplied rejectionDate firstInterviewDate technicalChallengeInterviewDate secondInterviewDate'
       )
       .populate({ path: 'recruiter' })
+      .sort({ dateApplied: -1 })
 
    res.status(200).json(jobs)
 })
