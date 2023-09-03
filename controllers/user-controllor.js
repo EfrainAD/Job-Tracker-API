@@ -17,7 +17,10 @@ import {
    getUserFromHashedStoredToken,
    saveStoredToken,
 } from '../utils/token/stored-token-utils.js'
-import { createSessionToken } from '../utils/token/session-token-utils.js'
+import {
+   createSessionToken,
+   isTokenValid,
+} from '../utils/token/session-token-utils.js'
 import { throwError } from '../utils/errorHandler/errorHandler-utils.js'
 import {
    emailActions,
@@ -65,7 +68,7 @@ export const signInUser = asyncHandler(async (req, res) => {
    res.cookie('token', token, {
       path: '/',
       httpOnly: true,
-      expires: new Date(Date.now() + oneDayInMilliseconds), // a day lattedr
+      expires: new Date(Date.now() + oneDayInMilliseconds), // a day latter
       sameSite: 'none',
       secure: true,
    })
@@ -90,6 +93,15 @@ export const signOutUser = asyncHandler(async (req, res) => {
       secure: true,
    })
    res.status(200).json({ message: 'Signed Out Successful' })
+})
+
+export const signInStatus = asyncHandler(async (req, res) => {
+   const token = req.cookies.token
+
+   if (!token) return res.json(false)
+
+   const verified = isTokenValid(token)
+   return res.json(verified)
 })
 
 // Get Users Info

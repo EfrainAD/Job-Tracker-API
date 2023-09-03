@@ -8,6 +8,7 @@ import {
    requestPasswordReset,
    resetPassword,
    signImageUploadCredentials,
+   signInStatus,
    signInUser,
    signOutUser,
    updatePassword,
@@ -18,12 +19,14 @@ import {
 import requireUserAuth from '../middleware/auth-middleware.js'
 import upload from '../middleware/fileUploader.js'
 
-//Routes
+//User Routes
 router.post('/register', createUser)
 router.post('/signin', signInUser)
 router.delete('/signout', signOutUser)
+router.get('/isLoggedIn', signInStatus)
 router.get('/getuser', requireUserAuth, getUser)
-// Updating
+
+// Updating Routes
 router.patch('/updateuser', requireUserAuth, updateUser)
 router.post(
    '/uploadprofileimage',
@@ -31,16 +34,19 @@ router.post(
    upload.single('image'),
    updateUserPicture
 )
-// Passwords
+
+// Passwords Routes
 router.patch('/changePassword', requireUserAuth, updatePassword)
 router.post('/forgotPassword', requestPasswordReset)
 router.put('/resetPassword/:resetToken', resetPassword)
 // email verification
 router.post('/requesteMailVerification', requestEmailVerification)
 router.put('/verifyEmail/:verificationToken', verifyEmail)
-// Cloudinary Signiture
+
+// Cloudinary Signiture Routes
 router.get('/imageCredentials', requireUserAuth, signImageUploadCredentials)
 
+// Admin Routes
 router.get('/', getUsers)
 
 export default router
