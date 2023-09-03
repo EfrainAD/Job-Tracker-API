@@ -57,6 +57,10 @@ export const updateJob = asyncHandler(async (req, res) => {
    const jobId = req.params.id
    const body = req.body
 
+   if (body?.remote === 'null') {
+      body.remote = null
+   }
+
    const updatedBody = { ...body, owner: userId }
 
    // Add recruiter

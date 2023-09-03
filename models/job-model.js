@@ -34,7 +34,7 @@ const jobSchema = new mongoose.Schema(
       },
       remote: {
          type: String,
-         enum: ['remote', 'on-site', 'hybrid'],
+         enum: ['remote', 'on-site', 'hybrid', null],
          trim: true,
       },
       jobLocation: {
