@@ -322,11 +322,15 @@ export const verifyEmail = asyncHandler(async (req, res) => {
 
 // Signature for uploading an image from the client side
 export const signImageUploadCredentials = (req, res) => {
-   const userId = req.user._id
+   const fileName = req.user._id
+   const folder = 'Job Tracker App'
 
-   const { timestamp, signature, api_key } = signImgCredentials(userId)
+   const { timestamp, signature, api_key } = signImgCredentials(
+      fileName,
+      folder
+   )
 
-   res.status(200).json({ timestamp, signature, api_key })
+   res.status(200).json({ timestamp, signature, api_key, folder })
 }
 
 // Get All Users // TO BE REMOVED

@@ -29,7 +29,8 @@ export const uploadImage = async (public_id, file) => {
    }
 }
 
-export const signImgCredentials = (public_id) => {
+export const signImgCredentials = (public_id, folder) => {
+   console.log('folder', folder)
    const timestamp = Math.round(new Date().getTime() / 1000)
    const apiSecret = cloudinary.config().api_secret
    const api_key = cloudinary.config().api_key

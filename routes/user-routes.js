@@ -19,7 +19,7 @@ import {
 import requireUserAuth from '../middleware/auth-middleware.js'
 import upload from '../middleware/fileUploader.js'
 
-//User Routes
+// User Routes
 router.post('/register', createUser)
 router.post('/signin', signInUser)
 router.delete('/signout', signOutUser)
@@ -39,7 +39,8 @@ router.post(
 router.patch('/changePassword', requireUserAuth, updatePassword)
 router.post('/forgotPassword', requestPasswordReset)
 router.put('/resetPassword/:resetToken', resetPassword)
-// email verification
+
+// email verification Routes
 router.post('/requesteMailVerification', requestEmailVerification)
 router.put('/verifyEmail/:verificationToken', verifyEmail)
 
