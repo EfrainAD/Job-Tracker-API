@@ -39,6 +39,21 @@ export const addUserCouch = asyncHandler(async (req, res) => {
    })
 })
 
+export const getUserCouches = asyncHandler(async (req, res) => {
+   const user = req.user
+   const { _id } = user
+
+   if (!user) {
+      throwError(500, `Server Error: Improper use of get user's info function`)
+   }
+
+   const couches = await Couch.find({ couchee: _id })
+      .select('couch')
+      .populate({ path: 'couch', select: 'email name -_id' })
+
+   res.json(couches)
+})
+
 // Remove User's Couch
 export const removeUserCouch = asyncHandler(async (req, res) => {
    const user = req.user
