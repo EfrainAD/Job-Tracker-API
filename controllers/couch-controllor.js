@@ -55,55 +55,20 @@ export const getUserCouches = asyncHandler(async (req, res) => {
 })
 
 // Remove User's Couch
-export const removeUserCouch = asyncHandler(async (req, res) => {
+export const removeCouch = asyncHandler(async (req, res) => {
    const user = req.user
-   const { _id } = user
+   const { _id: userId } = req.user
+   const { id: couchId } = req.params
    const email = req.body.email
 
    if (!user) {
       throwError(500, `Server Error: Improper use of get user's info function`)
    }
-   if (!email) {
-      throwError(400, `You need the the couch's email`)
-   }
 
-   const couch = await User.findOne({ email })
+   const find = await Couch.findOneAndDelete({ _id: couchId, couchee: userId })
 
-   if (!checkIfUserExists(couch))
-      throwError(400, `Couch not found, double check the email provided`)
-
-   // Start Transaction
-   const session = await mongoose.startSession()
-   session.startTransaction()
-
-   try {
-      // Update the requesting user's couch field
-      const usersCouches = await User.findOneAndUpdate(
-         { _id },
-         { $pull: { couches: couch._id } },
-         { session, new: true }
-      )
-         .select('-_id couches')
-         .populate({ path: 'couches', select: 'name' })
-
-      // Update the couch's field for the user being added as a person being couched
-      const couchStatus = await Couch.deleteOne({
-         couch: couch,
-         couchee: _id,
-      })
-
-      await session.commitTransaction()
-      session.endSession()
-
-      res.json({
-         usersCouches: usersCouches.couches,
-         couchStatus,
-      })
-   } catch (error) {
-      await session.abortTransaction()
-      session.endSession()
-      throwError(500, `Transaction aborted: ${error}`)
-   }
+   if (find) res.json({ successful: true })
+   else throwError(400, 'Couch not found')
 })
 
 // Change if couchee the person couching is active

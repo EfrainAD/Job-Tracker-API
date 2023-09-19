@@ -4,14 +4,14 @@ import {
    addUserCouch,
    getAllCouches,
    getUserCouches,
-   removeUserCouch,
+   removeCouch,
    updateUserCouchee,
 } from '../controllers/couch-controllor.js'
 const router = express.Router()
 
 // All things couch
 router.post('/addUserCouch', requireUserAuth, addUserCouch)
-router.post('/removeUserCouch', requireUserAuth, removeUserCouch)
+router.delete('/:id', requireUserAuth, removeCouch)
 router.post('/UpdateUserCouchee', requireUserAuth, updateUserCouchee)
 router.get('/getUserCouches', requireUserAuth, getUserCouches)
 
