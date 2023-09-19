@@ -49,6 +49,7 @@ export const createNewUserObj = (user, formData) => {
    newUserObj.photo = formData.photo || user.photo
    newUserObj.phone = formData.phone || user.phone
    newUserObj.bio = formData.bio || user.bio
+   newUserObj.roles = formData.roles || user.roles
 
    return newUserObj
 }

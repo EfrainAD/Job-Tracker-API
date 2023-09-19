@@ -61,7 +61,7 @@ export const signInUser = asyncHandler(async (req, res) => {
    if ((await isPasswordCorrect(user, password)) !== true)
       throwError(401, 'user or password is invalid')
 
-   const { _id, name, photo, phone, bio } = user
+   const { _id, name, roles, photo, phone, bio } = user
 
    // Create cookie
    const token = createSessionToken(_id)
@@ -77,6 +77,7 @@ export const signInUser = asyncHandler(async (req, res) => {
       _id,
       name,
       email,
+      roles,
       photo,
       phone,
       bio,
@@ -113,12 +114,13 @@ export const getUser = asyncHandler(async (req, res) => {
       throwError(500, `Server Error: Improper use of get user's info function`)
    }
 
-   const { _id, name, email, photo, phone, bio } = user
+   const { _id, name, email, roles, photo, phone, bio } = user
 
    res.status(201).json({
       _id,
       name,
       email,
+      roles,
       photo,
       phone,
       bio,
@@ -228,10 +230,8 @@ export const requestPasswordReset = asyncHandler(async (req, res) => {
       resetToken,
       emailActions.resetPassword
    )
-   // console.log('stored token:', resetToken)
 
    res.status(200).json(response)
-   // res.status(200).json(resetToken)
 })
 
 // User Reset their Password from Email Token.

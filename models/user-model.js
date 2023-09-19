@@ -1,9 +1,6 @@
 import mongoose from 'mongoose'
 import bcrypt from 'bcryptjs'
-import {
-   COUCHES_LIMIT,
-   MAX_PASSWORD_LENGTH,
-} from '../utils/variables/globalVariables.js'
+import { MAX_PASSWORD_LENGTH } from '../utils/variables/globalVariables.js'
 
 const userSchema = mongoose.Schema(
    {
@@ -33,6 +30,11 @@ const userSchema = mongoose.Schema(
             'Encripted password must be at least 60 characters long',
          ],
       },
+      roles: {
+         type: [String],
+         enum: ['couch', 'couchee'],
+         default: ['couchee'],
+      },
       photo: {
          type: String,
          required: [true, 'Must have a photo, Error should have a default'],
@@ -47,12 +49,6 @@ const userSchema = mongoose.Schema(
          maxLength: [250, 'Bio must be shorter then 250 characters long'],
          default: 'bio',
       },
-      couches: [
-         {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
-         },
-      ],
    },
    {
       toJSON: {
@@ -103,20 +99,6 @@ userSchema.pre('findOneAndUpdate', async function (next) {
    } catch (error) {
       return next(error)
    }
-})
-userSchema.pre('findOneAndUpdate', async function (next) {
-   const update = this.getUpdate()
-   if (update.$addToSet?.couches) {
-      const { couches } = await this.model.findOne(this.getQuery())
-
-      if (couches.length >= COUCHES_LIMIT) {
-         const err = new Error(
-            `Maximum number of couches can't exceed ${COUCHES_LIMIT}.`
-         )
-         return next(err)
-      }
-   }
-   next()
 })
 // userSchema.pre('save', async function (next) {
 //    try {
