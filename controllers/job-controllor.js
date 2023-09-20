@@ -126,7 +126,7 @@ export const deleteJob = asyncHandler(async (req, res) => {
          'Job not found, it does not exist or user does not have access.'
       )
 
-   res.status(204).send()
+   res.status(204).send(job)
 })
 
 // Get All Jobs
