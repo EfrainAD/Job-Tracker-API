@@ -8,6 +8,7 @@ import jobBoardRoutes from './routes/jobBoard-routes.js'
 import userRoutes from './routes/user-routes.js'
 import recruiterRoutes from './routes/recruiter-routes.js'
 import couchRoutes from './routes/couch-routes.js'
+import companyRoutes from './routes/company-routes.js'
 
 // Middleware Imports
 import cors from 'cors'
@@ -40,6 +41,7 @@ app.use('/api/jobBoards', jobBoardRoutes)
 app.use('/api/users', userRoutes)
 app.use('/api/recruiters', recruiterRoutes)
 app.use('/api/couch', couchRoutes)
+app.use('/api/companies', companyRoutes)
 
 app.get('/', (req, res) => {
    res.send(
