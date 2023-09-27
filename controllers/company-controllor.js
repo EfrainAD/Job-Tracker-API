@@ -37,7 +37,7 @@ export const getCompanies = asyncHandler(async (req, res) => {
 export const getCompanyNames = asyncHandler(async (req, res) => {
    const userId = req.user._id
 
-   const companies = await Company.find({ owner: userId }).select('name')
+   const companies = await Company.find({ owner: userId }).select('companyName')
 
    res.status(200).json(companies)
 })
@@ -63,26 +63,33 @@ export const getCompany = asyncHandler(async (req, res) => {
 })
 
 // TODo refactored logic out to make a func
+// Create Company Function
+export const updateCompanyFunc = asyncHandler(
+   async (userId, companyId, body) => {
+      const updatedBody = { owner: userId, ...body }
+
+      const updatedCompany = await Company.findOneAndUpdate(
+         { _id: companyId, owner: userId },
+         updatedBody,
+         { new: true, runValidators: true }
+      )
+
+      if (!updatedCompany) {
+         throwError(
+            404,
+            'Company not found, company does not exist or user does not have access.'
+         )
+      }
+      return updatedCompany
+   }
+)
 // Update Company - PATCH
 export const updateCompany = asyncHandler(async (req, res) => {
    const userId = req.user._id
    const companyId = req.params.id
    const body = req.body
 
-   const updatedBody = { owner: userId, ...body }
-
-   const updatedCompany = await Company.findOneAndUpdate(
-      { _id: companyId, owner: userId },
-      updatedBody,
-      { new: true, runValidators: true }
-   )
-
-   if (!updatedCompany) {
-      throwError(
-         404,
-         'Company not found, company does not exist or user does not have access.'
-      )
-   }
+   const updatedCompany = await updateCompanyFunc(userId, companyId, body)
 
    res.status(200).json(updatedCompany)
 })

@@ -5,7 +5,6 @@ import {
    getALLJobs,
    getJob,
    getJobs,
-   removeRecruiterFromJob,
    updateJob,
 } from '../controllers/job-controllor.js'
 import requireUserAuth from '../middleware/auth-middleware.js'
@@ -18,7 +17,6 @@ router.get('/dev', getALLJobs)
 router.post('/', requireUserAuth, createJob)
 router.get('/', requireUserAuth, getJobs)
 router.get('/:id', requireUserAuth, getJob)
-router.patch('/removeRecruiter/:id', requireUserAuth, removeRecruiterFromJob)
 router.patch('/:id', requireUserAuth, updateJob)
 router.delete('/:id', requireUserAuth, deleteJob)
 

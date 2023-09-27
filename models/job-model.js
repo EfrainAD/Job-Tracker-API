@@ -1,4 +1,6 @@
 import mongoose from 'mongoose'
+import Company from './company-model.js'
+import { isCompanyRef } from '../utils/model/model.utils.js'
 
 const jobSchema = new mongoose.Schema(
    {
@@ -7,18 +9,18 @@ const jobSchema = new mongoose.Schema(
          required: true,
          ref: 'User',
       },
-      companyName: {
-         type: String,
-         required: [true, 'The company name is required'],
-         trim: true,
-      },
-      companySize: {
-         type: String,
-         trim: true,
+      company: {
+         type: mongoose.Schema.Types.ObjectId,
+         required: true,
+         ref: 'Company',
       },
       jobTitle: {
          type: String,
          required: [true, 'The job title is required'],
+         trim: true,
+      },
+      jobBoardURL: {
+         type: String,
          trim: true,
       },
       jobURL: {
@@ -58,12 +60,6 @@ const jobSchema = new mongoose.Schema(
          type: String,
          trim: true,
       },
-      recruiter: [
-         {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Recruiter',
-         },
-      ],
       dateApplied: {
          type: Date,
          required: [true, 'The application date is required'],
@@ -89,5 +85,19 @@ const jobSchema = new mongoose.Schema(
       timestamps: true,
    }
 )
+
+jobSchema.post('findOneAndDelete', async function (doc) {
+   const companyId = doc.company
+
+   if (!(await isCompanyRef(companyId))) {
+      const res = await Company.findByIdAndDelete(companyId)
+
+      if (!res) {
+         console.error(
+            'Company failed to be deleted, after deleting a job, and the company no longer being ref by anything.'
+         )
+      }
+   }
+})
 
 export default mongoose.model('Job', jobSchema)

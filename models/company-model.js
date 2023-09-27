@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { isCompanyRef } from '../utils/model/model.utils.js'
 
 const companySchema = new mongoose.Schema(
    {
@@ -7,16 +8,16 @@ const companySchema = new mongoose.Schema(
          required: true,
          ref: 'User',
       },
-      name: {
+      companyName: {
          type: String,
          required: [true, 'The company name is required'],
          trim: true,
       },
-      linkedInUrl: {
+      companyLinkedInUrl: {
          type: String,
          trim: true,
       },
-      officialUrl: {
+      companyOfficialUrl: {
          type: String,
          trim: true,
       },
@@ -25,7 +26,7 @@ const companySchema = new mongoose.Schema(
          required: true,
          default: false,
       },
-      size: {
+      companySize: {
          type: String,
          trim: true,
       },
@@ -34,5 +35,13 @@ const companySchema = new mongoose.Schema(
       timestamps: true,
    }
 )
+
+companySchema.pre('findOneAndDelete', async function () {
+   const companyId = this.getFilter()._id
+
+   if (await isCompanyRef(companyId)) {
+      throw new Error('error: This is being referenced by another document.')
+   }
+})
 
 export default mongoose.model('Company', companySchema)

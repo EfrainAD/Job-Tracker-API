@@ -1,7 +1,17 @@
 import Job from '../models/job-model.js'
 import asyncHandler from 'express-async-handler'
 import { throwError } from '../utils/errorHandler/errorHandler-utils.js'
-import { isCreateJobFormValidated } from '../utils/Job/job-utils.js'
+import {
+   createJobBody,
+   isCreateJobFormValidated,
+} from '../utils/Job/job-utils.js'
+import {
+   createCompanyBody,
+   isCreateCompanyAttributesValidated,
+} from '../utils/company/company-utils.js'
+import Company from '../models/company-model.js'
+import { updateCompanyFunc } from './company-controllor.js'
+import { is_id } from '../utils/model/model.utils.js'
 
 // Create Job
 export const createJob = asyncHandler(async (req, res, next) => {
@@ -11,7 +21,21 @@ export const createJob = asyncHandler(async (req, res, next) => {
    if (!isCreateJobFormValidated(body))
       throwError(400, 'Missing one or more required fields')
 
-   const newJob = { ...body, owner: userId }
+   const jobBody = createJobBody(body)
+   if (!is_id(jobBody.company)) {
+      const companyBody = createCompanyBody(body.company)
+
+      if (!isCreateCompanyAttributesValidated(companyBody))
+         throwError(400, 'Missing one or more required fields the company info')
+
+      const newCompany = { ...companyBody, owner: userId }
+
+      const { _id: companyId } = await Company.create(newCompany)
+
+      jobBody.company = companyId
+   }
+
+   const newJob = { ...jobBody, owner: userId }
 
    const job = await Job.create(newJob)
 
@@ -26,7 +50,7 @@ export const getJobs = asyncHandler(async (req, res) => {
       .select(
          'companyName jobTitle remote recruiter dateApplied rejectionDate firstInterviewDate technicalChallengeInterviewDate secondInterviewDate'
       )
-      .populate({ path: 'recruiter' })
+      .populate({ path: 'company', select: 'companyName peersOutreach -_id' })
       .sort({ dateApplied: -1 })
 
    res.status(200).json(jobs)
@@ -38,7 +62,8 @@ export const getJob = asyncHandler(async (req, res) => {
    const jobId = req.params.id
 
    const job = await Job.findOne({ owner: userId, _id: jobId }).populate({
-      path: 'recruiter',
+      path: 'company',
+      select: 'companyName peersOutreach companySize _id',
    })
 
    if (!job) {
@@ -61,47 +86,31 @@ export const updateJob = asyncHandler(async (req, res) => {
       body.remote = null
    }
 
-   const updatedBody = { ...body, owner: userId }
+   const jobBody = createJobBody(body)
+   console.log('jobBody', jobBody)
 
-   // Add recruiter
-   if (updatedBody.recruiter) {
-      updatedBody.$addToSet = {
-         recruiter: updatedBody.recruiter,
-      }
-      delete updatedBody.recruiter
+   if (body.company) {
+      const companyBody = createCompanyBody(body.company)
+      console.log('companyBody', companyBody)
+
+      const newCompany = { ...companyBody, owner: userId }
+
+      const { _id: companyId } = await Company.findOneAndUpdate(
+         { _id: body.company._id, owner: userId },
+         newCompany,
+         { new: true, runValidators: true }
+      )
+
+      jobBody.company = companyId
    }
+
+   const updatedBody = { ...jobBody, owner: userId }
 
    const updatedJob = await Job.findOneAndUpdate(
       { _id: jobId, owner: userId },
       updatedBody,
       { new: true, runValidators: true }
-   ).populate({ path: 'recruiter', select: 'name' })
-
-   if (!updatedJob) {
-      throwError(
-         404,
-         'Job not found, job does not exist or user does not have access.'
-      )
-   }
-
-   res.status(200).json(updatedJob)
-})
-
-// Remove recruiter from Job
-export const removeRecruiterFromJob = asyncHandler(async (req, res) => {
-   const userId = req.user._id
-   const jobId = req.params.id
-   const { recruiter } = req.body
-
-   if (!recruiter) {
-      throwError(400, 'Recruiter to remove is required')
-   }
-
-   const updatedJob = await Job.findOneAndUpdate(
-      { _id: jobId, owner: userId },
-      { $pull: { recruiter } },
-      { new: true, runValidators: true }
-   ).populate({ path: 'recruiter', select: 'name' })
+   ).populate('company')
 
    if (!updatedJob) {
       throwError(
@@ -131,9 +140,12 @@ export const deleteJob = asyncHandler(async (req, res) => {
 
 // Get All Jobs
 export const getALLJobs = asyncHandler(async (req, res) => {
-   const job = await Job.find({}).populate({
-      path: 'owner',
-      select: 'name email',
-   })
+   const job = await Job.find({})
+      .populate({
+         path: 'owner',
+         select: 'name email',
+      })
+      .populate('company')
+
    res.status(201).json(job)
 })
