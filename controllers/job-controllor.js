@@ -50,7 +50,7 @@ export const getJobs = asyncHandler(async (req, res) => {
       .select(
          'companyName jobTitle remote recruiter dateApplied rejectionDate firstInterviewDate technicalChallengeInterviewDate secondInterviewDate'
       )
-      .populate({ path: 'company', select: 'companyName peersOutreach -_id' })
+      .populate({ path: 'company', select: 'companyName peersOutreach _id' })
       .sort({ dateApplied: -1 })
 
    res.status(200).json(jobs)

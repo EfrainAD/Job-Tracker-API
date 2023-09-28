@@ -62,7 +62,6 @@ export const getCompany = asyncHandler(async (req, res) => {
    res.status(200).json(company)
 })
 
-// TODo refactored logic out to make a func
 // Create Company Function
 export const updateCompanyFunc = asyncHandler(
    async (userId, companyId, body) => {
