@@ -13,9 +13,16 @@ const recruiterSchema = new mongoose.Schema(
          trim: true,
       },
       company: {
-         type: String,
-         required: [true, 'The company name is required'],
-         trim: true,
+         type: mongoose.Schema.Types.ObjectId,
+         required: true,
+         validate: {
+            validator: async function (value) {
+               const company = await mongoose.model('Company').findById(value)
+               return !!company
+            },
+            message: 'Invalid company reference',
+         },
+         ref: 'Company',
       },
       url: {
          type: String,

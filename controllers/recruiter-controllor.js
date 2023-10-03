@@ -22,7 +22,10 @@ export const createRecruiter = asyncHandler(async (req, res, next) => {
 export const getRecruiters = asyncHandler(async (req, res) => {
    const userId = req.user._id
 
-   const recruiters = await Recruiter.find({ owner: userId })
+   const recruiters = await Recruiter.find({ owner: userId }).populate({
+      path: 'company',
+      select: 'companyName -_id',
+   })
 
    res.status(200).json(recruiters)
 })
@@ -35,7 +38,7 @@ export const getRecruiter = asyncHandler(async (req, res) => {
    const recruiter = await Recruiter.findOne({
       owner: userId,
       _id: recruiterId,
-   })
+   }).populate({ path: 'company', select: 'companyName companySize' })
 
    if (!recruiter) {
       throwError(
