@@ -16,6 +16,7 @@ router.get('/dev', getALLJobs)
 //Routes
 router.post('/', requireUserAuth, createJob)
 router.get('/', requireUserAuth, getJobs)
+router.get('/coachee/:id', requireUserAuth, getJobs)
 router.get('/:id', requireUserAuth, getJob)
 router.patch('/:id', requireUserAuth, updateJob)
 router.delete('/:id', requireUserAuth, deleteJob)

@@ -12,6 +12,7 @@ import {
 import Company from '../models/company-model.js'
 import { updateCompanyFunc } from './company-controllor.js'
 import { is_id } from '../utils/model/model.utils.js'
+import Coach from '../models/couch-model.js'
 
 // Create Job
 export const createJob = asyncHandler(async (req, res, next) => {
@@ -45,8 +46,21 @@ export const createJob = asyncHandler(async (req, res, next) => {
 // Get All User's Jobs
 export const getJobs = asyncHandler(async (req, res) => {
    const userId = req.user._id
+   const coacheeId = req.params.id
+   let ownerId = coacheeId ? coacheeId : userId
 
-   const jobs = await Job.find({ owner: userId })
+   if (coacheeId) {
+      const find = await Coach.findOne({ couch: userId, couchee: coacheeId })
+
+      if (!find) {
+         throwError(
+            404,
+            'User not found, the user does not exist or you do not have access.'
+         )
+      }
+   }
+
+   const jobs = await Job.find({ owner: ownerId })
       .select(
          'companyName jobTitle remote recruiter dateApplied rejectionDate firstInterviewDate technicalChallengeInterviewDate secondInterviewDate'
       )
