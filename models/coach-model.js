@@ -1,12 +1,12 @@
 import mongoose from 'mongoose'
 
-const couchSchema = mongoose.Schema(
+const coachSchema = mongoose.Schema(
    {
-      couch: {
+      coach: {
          type: mongoose.Schema.Types.ObjectId,
          ref: 'User',
       },
-      couchee: {
+      coachee: {
          type: mongoose.Schema.Types.ObjectId,
          ref: 'User',
       },
@@ -20,4 +20,4 @@ const couchSchema = mongoose.Schema(
    }
 )
 
-export default mongoose.model('Couch', couchSchema)
+export default mongoose.model('Coach', coachSchema)

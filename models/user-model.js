@@ -32,8 +32,8 @@ const userSchema = mongoose.Schema(
       },
       roles: {
          type: [String],
-         enum: ['couch', 'couchee'],
-         default: ['couchee'],
+         enum: ['coach', 'coachee'],
+         default: ['coachee'],
       },
       photo: {
          type: String,

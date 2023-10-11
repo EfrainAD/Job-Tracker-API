@@ -12,7 +12,7 @@ import {
 import Company from '../models/company-model.js'
 import { updateCompanyFunc } from './company-controllor.js'
 import { is_id } from '../utils/model/model.utils.js'
-import Coach from '../models/couch-model.js'
+import Coach from '../models/coach-model.js'
 
 // Create Job
 export const createJob = asyncHandler(async (req, res, next) => {
@@ -50,7 +50,7 @@ export const getJobs = asyncHandler(async (req, res) => {
    let ownerId = coacheeId ? coacheeId : userId
 
    if (coacheeId) {
-      const find = await Coach.findOne({ couch: userId, couchee: coacheeId })
+      const find = await Coach.findOne({ coach: userId, coachee: coacheeId })
 
       if (!find) {
          throwError(

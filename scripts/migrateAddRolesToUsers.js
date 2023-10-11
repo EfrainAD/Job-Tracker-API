@@ -8,7 +8,7 @@ try {
 
    const updateMany = await User.updateMany(
       {},
-      { $set: { roles: ['couchee'] } },
+      { $set: { roles: ['coachee'] } },
       {
          new: true,
          runValidators: true,

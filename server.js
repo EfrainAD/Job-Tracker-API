@@ -7,7 +7,7 @@ import jobRoutes from './routes/job-routes.js'
 import jobBoardRoutes from './routes/jobBoard-routes.js'
 import userRoutes from './routes/user-routes.js'
 import recruiterRoutes from './routes/recruiter-routes.js'
-import couchRoutes from './routes/couch-routes.js'
+import coachRoutes from './routes/coach-routes.js'
 import companyRoutes from './routes/company-routes.js'
 
 // Middleware Imports
@@ -40,7 +40,7 @@ app.use('/api/jobs', jobRoutes)
 app.use('/api/jobBoards', jobBoardRoutes)
 app.use('/api/users', userRoutes)
 app.use('/api/recruiters', recruiterRoutes)
-app.use('/api/couch', couchRoutes)
+app.use('/api/coach', coachRoutes)
 app.use('/api/companies', companyRoutes)
 
 app.get('/', (req, res) => {
