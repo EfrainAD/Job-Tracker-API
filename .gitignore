@@ -1,5 +1,6 @@
 #backups
 scripts/backup/
+scripts/dump/
 # Logs
 logs
 *.log
@@ -72,6 +73,7 @@ typings/
 
 # dotenv environment variables file
 .env
+.scripts.env
 .env.test
 
 # parcel-bundler cache (https://parceljs.org/)
