@@ -23,7 +23,11 @@ const jobSchema = new mongoose.Schema(
          type: String,
          trim: true,
       },
-      jobURL: {
+      applicationURL: {
+         type: String,
+         trim: true,
+      },
+      jobBoardURL: {
          type: String,
          trim: true,
       },
