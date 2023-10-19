@@ -62,7 +62,7 @@ export const getJobs = asyncHandler(async (req, res) => {
 
    const jobs = await Job.find({ owner: ownerId })
       .select(
-         'companyName jobTitle remote recruiter dateApplied rejectionDate firstInterviewDate technicalChallengeInterviewDate secondInterviewDate'
+         'companyName jobTitle remote recruiter dateApplied notes rejectionDate firstInterviewDate technicalChallengeInterviewDate secondInterviewDate'
       )
       .populate({ path: 'company', select: 'companyName peersOutreach _id' })
       .sort({ dateApplied: -1 })
