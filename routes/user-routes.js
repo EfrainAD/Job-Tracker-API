@@ -1,6 +1,7 @@
 import express from 'express'
 const router = express.Router()
 import {
+   contactEmail,
    createUser,
    getUser,
    getUsers,
@@ -40,8 +41,9 @@ router.patch('/changePassword', requireUserAuth, updatePassword)
 router.post('/forgotPassword', requestPasswordReset)
 router.put('/resetPassword/:resetToken', resetPassword)
 
-// email verification Routes
+// Email Routes
 router.post('/requesteMailVerification', requestEmailVerification)
+router.post('/contactEmail/', requireUserAuth, contactEmail)
 router.put('/verifyEmail/:verificationToken', verifyEmail)
 
 // Cloudinary Signiture Routes

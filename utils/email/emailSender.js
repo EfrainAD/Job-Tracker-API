@@ -1,6 +1,12 @@
 import mailMan from 'nodemailer'
 
-const sendEmail = async (subject, message, send_to, sent_from, reply_to) => {
+const sendEmail = async (
+   subject,
+   message,
+   send_to,
+   sent_from,
+   reply_to = sent_from
+) => {
    const transporter = mailMan.createTransport({
       host: process.env.EMAIL_HOST,
       port: 587,

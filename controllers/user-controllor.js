@@ -206,6 +206,20 @@ export const updatePassword = asyncHandler(async (req, res) => {
    res.json(updatedUser)
 })
 
+// User sends bug report, or simple contacts person that handles them
+export const contactEmail = asyncHandler(async (req, res) => {
+   const user = req.user
+   const { message } = req.body
+
+   const response = await sendEmail({
+      user,
+      action: emailActions.contactemail,
+      usersMessage: message,
+   })
+
+   res.status(200).json(response)
+})
+
 // User Request to Reset their Password
 export const requestPasswordReset = asyncHandler(async (req, res) => {
    const { email } = req.body

@@ -11,6 +11,7 @@ export const isValidEmail = (email) => {
 export const emailActions = {
    resetPassword: 'resetpassword',
    verifyemail: 'verifyemail',
+   contactemail: 'contactemail',
 }
 
 const emailTemplate = {
@@ -45,22 +46,33 @@ const emailTemplate = {
          <p>Job Tracker Team</p>
       `,
    },
+   contactemail: {
+      subject: 'Contat/bug Email',
+      discription: 'email to report a bug',
+      message: ({ user, usersMessage }) => `
+         <h2>This message is from ${user.name}</h2>
+         <p>${usersMessage}</p>
+      `,
+   },
 }
 
-export const sendEmail = async (user, resetToken, action) => {
+export const sendEmail = async ({ user, resetToken, action, usersMessage }) => {
    const template = emailTemplate[action]
    if (!template) throwError(500, `Invalid email action: ${action}`)
 
-   const resetUrl = `${
-      process.env.FRONT_PAGE_URL || 'http://127.0.0.1:3000'
-   }/${action}/${resetToken}`
+   const resetUrl = resetToken
+      ? `${
+           process.env.FRONT_PAGE_URL || 'http://127.0.0.1:3000'
+        }/${action}/${resetToken}`
+      : null
    const subject = template.subject
-   const send_to = user.email
+   const send_to = resetToken ? user.email : process.env.EMAIL_USER
    const sent_from = process.env.EMAIL_USER
-   const message = template.message(user, resetUrl, template)
+   const reply_to = resetToken ? process.env.EMAIL_USER : user.email
+   const message = template.message({ user, resetUrl, template, usersMessage })
 
    try {
-      await submitEmail(subject, message, send_to, sent_from)
+      await submitEmail(subject, message, send_to, sent_from, reply_to)
       return {
          success: true,
          message: `An ${template.discription} has been sent`,
