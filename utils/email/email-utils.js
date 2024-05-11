@@ -19,11 +19,11 @@ const emailTemplate = {
       subject: 'Reset Password Request',
       discription: `email to reset the user's password`,
       minutesEmailExpires: EXPIRES_IN_MINUTES,
-      message: ({ name }, resetUrl, { minutesEmailExpires }) => `
-         <h2>Hello ${name}</h2>
+      message: ({ user, resetUrl, template }) => `
+         <h2>Hello ${user.name}</h2>
          <p>You requested a password reset</p>
          <p>Please use the url below to reset your password</p>
-         <p>This link is valid for only ${minutesEmailExpires} minutes.</p>
+         <p>This link is valid for only ${template.minutesEmailExpires} minutes.</p>
 
          <a href="${resetUrl}" clicktracking="off">${resetUrl}</a>
 
@@ -34,11 +34,11 @@ const emailTemplate = {
       subject: 'Verify Email',
       minutesEmailExpires: EXPIRES_IN_MINUTES,
       discription: 'email to verify your account',
-      message: ({ name }, resetUrl, { minutesEmailExpires }) => `
-         <h2>Hello ${name}</h2>
+      message: ({ user, resetUrl, template }) => `
+         <h2>Hello ${user.name}</h2>
          <p>Your email needs to be verified</p>
          <p>Please use the url below to to verify your email</p>
-         <p>This link is valid for only ${minutesEmailExpires} minutes.</p>
+         <p>This link is valid for only ${template.minutesEmailExpires} minutes.</p>
 
          <a href="${resetUrl}" clicktracking="off">${resetUrl}</a>
 

@@ -239,11 +239,11 @@ export const requestPasswordReset = asyncHandler(async (req, res) => {
 
    saveStoredToken(user._id, hashedToken)
 
-   const response = await sendEmail(
+   const response = await sendEmail({
       user,
       resetToken,
-      emailActions.resetPassword
-   )
+      action: emailActions.resetPassword,
+   })
 
    res.status(200).json(response)
 })
@@ -299,7 +299,11 @@ export const requestEmailVerification = asyncHandler(async (req, res) => {
 
    saveStoredToken(user._id, hashedToken)
 
-   const response = await sendEmail(user, resetToken, emailActions.verifyemail)
+   const response = await sendEmail({
+      user,
+      resetToken,
+      action: emailActions.verifyemail,
+   })
 
    res.status(200).json(response)
 })
