@@ -58,6 +58,8 @@ const emailTemplate = {
 
 export const sendEmail = async ({ user, resetToken, action, usersMessage }) => {
    const template = emailTemplate[action]
+   const isUserRecipient = action !== emailActions.contactemail
+
    if (!template) throwError(500, `Invalid email action: ${action}`)
 
    const resetUrl = resetToken
@@ -65,14 +67,17 @@ export const sendEmail = async ({ user, resetToken, action, usersMessage }) => {
            process.env.FRONT_PAGE_URL || 'http://127.0.0.1:3000'
         }/${action}/${resetToken}`
       : null
-   const subject = template.subject
-   const send_to = resetToken ? user.email : process.env.EMAIL_USER
-   const sent_from = process.env.EMAIL_USER
-   const reply_to = resetToken ? process.env.EMAIL_USER : user.email
-   const message = template.message({ user, resetUrl, template, usersMessage })
+   const emailObj = {
+      resetUrl,
+      subject: template.subject,
+      send_to: isUserRecipient ? user.email : process.env.EMAIL_USER,
+      sent_from: process.env.EMAIL_USER,
+      reply_to: isUserRecipient ? process.env.EMAIL_USER : user.email,
+      message: template.message({ user, resetUrl, template, usersMessage }),
+   }
 
    try {
-      await submitEmail(subject, message, send_to, sent_from, reply_to)
+      await submitEmail(emailObj)
       return {
          success: true,
          message: `An ${template.discription} has been sent`,
