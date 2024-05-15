@@ -6,6 +6,10 @@ import {
    isCreateJobFormValidated,
 } from '../utils/Job/job-utils.js'
 import {
+   createRecruiterBody,
+   isCreateRecruiterAttributesValidated,
+} from '../utils/recruiter/recruiter-utils.js'
+import {
    createCompanyBody,
    isCreateCompanyAttributesValidated,
 } from '../utils/company/company-utils.js'
@@ -13,9 +17,10 @@ import Company from '../models/company-model.js'
 import { updateCompanyFunc } from './company-controllor.js'
 import { is_id } from '../utils/model/model.utils.js'
 import Coach from '../models/coach-model.js'
+import Recruiter from '../models/recruiter-model.js'
 
 // Create Job
-export const createJob = asyncHandler(async (req, res, next) => {
+export const createJob = asyncHandler(async (req, res) => {
    const userId = req.user._id
    const body = req.body
 
@@ -23,6 +28,8 @@ export const createJob = asyncHandler(async (req, res, next) => {
       throwError(400, 'Missing one or more required fields')
 
    const jobBody = createJobBody(body)
+
+   // If the company is new and needs be added, add it here.
    if (!is_id(jobBody.company)) {
       const companyBody = createCompanyBody(body.company)
 
@@ -39,6 +46,25 @@ export const createJob = asyncHandler(async (req, res, next) => {
    const newJob = { ...jobBody, owner: userId }
 
    const job = await Job.create(newJob)
+
+   // If recruiters with this form, add them here
+   for (const recruiter of body.recruiters) {
+      const recruiterBody = createRecruiterBody(recruiter)
+
+      if (!isCreateRecruiterAttributesValidated(recruiterBody))
+         throwError(
+            400,
+            'Missing one or more required fields for one or more of the recruiters'
+         )
+
+      const newRecruiter = {
+         ...recruiterBody,
+         owner: userId,
+         company: job.company._id,
+      }
+
+      await Recruiter.create(newRecruiter)
+   }
 
    res.status(201).json(job)
 })
